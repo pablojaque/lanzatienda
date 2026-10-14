@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { renderStore } from '@/lib/storeTemplate';
 import { deployStatic } from '@/lib/vercel';
+import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -19,6 +20,14 @@ function slugify(s) {
 
 export async function POST(request) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Tu sesión ha caducado. Vuelve a iniciar sesión.' }, { status: 401 });
+    }
+
     const { config, images } = await request.json();
 
     if (!config?.storeName || !config?.productName || !(Number(config.price) > 0)) {

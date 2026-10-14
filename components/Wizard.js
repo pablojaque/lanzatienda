@@ -179,9 +179,14 @@ export default function Wizard() {
     <div className="builder">
       <aside className="panel">
         <div className="panel-top">
-          <Link href="/" className="brand">
-            Lanza<span>Tienda</span>
-          </Link>
+          <div className="row">
+            <Link href="/" className="brand">
+              Lanza<span>Tienda</span>
+            </Link>
+            <form action="/auth/salir" method="post">
+              <button className="logout">Salir</button>
+            </form>
+          </div>
           <div className="progress">
             {STEPS.map((s, i) => (
               <button

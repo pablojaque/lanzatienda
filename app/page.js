@@ -43,7 +43,7 @@ export default function Home() {
           <Link href="/crear" className="btn btn-primary btn-xl">
             🚀 Crear mi tienda ahora
           </Link>
-          <p className="hint">Gratis · Sin registro · Sin tarjeta</p>
+          <p className="hint">Gratis · Sin tarjeta · Registro en 10 segundos</p>
         </section>
 
         <section className="container steps">

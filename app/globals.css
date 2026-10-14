@@ -679,6 +679,74 @@ button {
   white-space: nowrap;
 }
 
+/* Auth */
+.auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 36px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.auth-card .brand {
+  display: inline-block;
+  margin-bottom: 22px;
+}
+.auth-card h1 {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+.auth-card .form {
+  text-align: left;
+}
+.auth-card .form .btn {
+  margin-top: 4px;
+}
+.auth-card .alert {
+  margin-top: 0;
+}
+.auth-tabs {
+  display: flex;
+  background: #f1f1f4;
+  border-radius: 12px;
+  padding: 4px;
+}
+.auth-tabs button {
+  flex: 1;
+  border: 0;
+  background: none;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--muted);
+}
+.auth-tabs button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(15, 15, 18, 0.1);
+}
+.logout {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+.logout:hover {
+  color: var(--ink);
+}
+
 @media (max-width: 900px) {
   .steps {
     grid-template-columns: 1fr 1fr;
