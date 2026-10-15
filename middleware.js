@@ -37,8 +37,8 @@ export async function middleware(request) {
     return res;
   };
 
-  // Para crear una tienda hay que tener cuenta
-  if (!user && pathname.startsWith('/crear')) return redirectTo('/entrar?next=/crear');
+  // Para crear o ver tus tiendas hay que tener cuenta
+  if (!user && pathname !== '/entrar') return redirectTo(`/entrar?next=${encodeURIComponent(pathname)}`);
   // Si ya has iniciado sesión, no tiene sentido ver el formulario de entrada
   if (user && pathname === '/entrar') return redirectTo('/crear');
 
@@ -46,5 +46,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/crear/:path*', '/entrar'],
+  matcher: ['/crear/:path*', '/mis-tiendas/:path*', '/entrar'],
 };

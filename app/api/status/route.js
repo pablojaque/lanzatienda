@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDeployment } from '@/lib/vercel';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 
@@ -22,6 +23,12 @@ export async function GET(request) {
       // Sin alias todavía: esperar a que Vercel asigne el dominio público
       if (!preferred && !shortest) return NextResponse.json({ state: 'BUILDING' });
       url = `https://${preferred || shortest}`;
+      // Si Vercel le dio otra dirección distinta a la prevista, la guardamos
+      if (!preferred) {
+        try {
+          await createAdminClient().from('stores').update({ url }).eq('deployment_id', id);
+        } catch {}
+      }
     }
     return NextResponse.json({ state, url });
   } catch (err) {

@@ -22,9 +22,14 @@ export default function Home() {
           <Link href="/" className="brand">
             Lanza<span>Tienda</span>
           </Link>
-          <Link href="/crear" className="btn btn-dark btn-sm">
-            Crear mi tienda
-          </Link>
+          <div className="header-actions">
+            <Link href="/mis-tiendas" className="logout">
+              Mis tiendas
+            </Link>
+            <Link href="/crear" className="btn btn-dark btn-sm">
+              Crear mi tienda
+            </Link>
+          </div>
         </div>
       </header>
 

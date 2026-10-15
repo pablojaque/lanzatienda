@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { renderStore } from '@/lib/storeTemplate';
 import { deployStatic } from '@/lib/vercel';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -59,7 +60,29 @@ export async function POST(request) {
     ];
 
     const deployment = await deployStatic(projectName, files);
-    return NextResponse.json({ id: deployment.id, projectName });
+
+    // Guardamos la tienda a nombre del usuario (para "Mis tiendas" y su dominio)
+    // (si falla, la tienda sigue publicada igualmente)
+    let storeId = null;
+    try {
+      const { data: store, error: dbError } = await createAdminClient()
+        .from('stores')
+        .insert({
+          user_id: user.id,
+          store_name: String(config.storeName).slice(0, 80),
+          project_name: projectName,
+          deployment_id: deployment.id,
+          url: `https://${projectName}.vercel.app`,
+        })
+        .select('id')
+        .single();
+      if (dbError) throw dbError;
+      storeId = store.id;
+    } catch (dbError) {
+      console.error('no se pudo guardar la tienda', dbError);
+    }
+
+    return NextResponse.json({ id: deployment.id, projectName, storeId });
   } catch (err) {
     console.error('launch error', err);
     return NextResponse.json({ error: err.message || 'No se pudo lanzar la tienda.' }, { status: 500 });

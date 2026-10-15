@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { COLORS, FONTS, UPSELLS, DEFAULT_UPSELLS } from '@/lib/storeOptions';
 import { renderStore } from '@/lib/storeTemplate';
+import { normalizeDomain } from '@/lib/domains';
+import DomainPanel from '@/components/DomainPanel';
 
 const STEPS = ['Fotos', 'Color', 'Fuente', 'Upsells', 'Lanzar'];
 
@@ -45,6 +47,7 @@ export default function Wizard() {
     paymentLink: '',
     contactEmail: '',
   });
+  const [domain, setDomain] = useState('');
   const [device, setDevice] = useState('desktop');
   const [launch, setLaunch] = useState({ status: 'idle' });
   const [copied, setCopied] = useState(false);
@@ -54,6 +57,8 @@ export default function Wizard() {
   const photoCount = images.filter(Boolean).length;
   const detailsOk = details.storeName.trim() && details.productName.trim() && Number(details.price) > 0;
   const linkOk = !details.paymentLink || /^https:\/\//.test(details.paymentLink);
+  const cleanDomain = normalizeDomain(domain);
+  const domainOk = !domain.trim() || !!cleanDomain;
   const canNext = step === 0 ? photoCount === 4 : true;
 
   const config = useMemo(
@@ -112,7 +117,7 @@ export default function Wizard() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al lanzar la tienda');
-      setLaunch({ status: 'deploying', id: data.id, projectName: data.projectName });
+      setLaunch({ status: 'deploying', id: data.id, projectName: data.projectName, storeId: data.storeId });
     } catch (err) {
       setLaunch({ status: 'error', error: err.message });
     }
@@ -166,10 +171,16 @@ export default function Wizard() {
           <a href={launch.url} target="_blank" rel="noreferrer" className="btn btn-primary btn-xl">
             Abrir mi tienda ↗
           </a>
-          <p className="hint">Guarda bien este enlace: es la dirección de tu tienda.</p>
-          <button className="text-btn" onClick={() => window.location.reload()}>
-            Crear otra tienda
-          </button>
+          <p className="hint">Siempre la tendrás guardada en «Mis tiendas».</p>
+          {launch.storeId && <DomainPanel storeId={launch.storeId} pendingDomain={cleanDomain || ''} />}
+          <div className="done-links">
+            <Link href="/mis-tiendas" className="text-btn">
+              Ver mis tiendas
+            </Link>
+            <button className="text-btn" onClick={() => window.location.reload()}>
+              Crear otra tienda
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -183,9 +194,14 @@ export default function Wizard() {
             <Link href="/" className="brand">
               Lanza<span>Tienda</span>
             </Link>
-            <form action="/auth/salir" method="post">
-              <button className="logout">Salir</button>
-            </form>
+            <div className="header-actions">
+              <Link href="/mis-tiendas" className="logout">
+                Mis tiendas
+              </Link>
+              <form action="/auth/salir" method="post">
+                <button className="logout">Salir</button>
+              </form>
+            </div>
           </div>
           <div className="progress">
             {STEPS.map((s, i) => (
@@ -380,6 +396,17 @@ export default function Wizard() {
                   <input type="email" value={details.contactEmail} onChange={set('contactEmail')} placeholder="hola@tutienda.com" />
                   <span className="field-hint">Si no pones enlace de pago, los pedidos te llegarán a este email.</span>
                 </label>
+                <label>
+                  Tu dominio (opcional)
+                  <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="mitienda.com" />
+                  {domainOk ? (
+                    <span className="field-hint">
+                      ¿Ya compraste un dominio? Ponlo aquí y lo conectamos. Si no, tu tienda tendrá un enlace gratis.
+                    </span>
+                  ) : (
+                    <span className="field-error">Escribe solo el dominio, por ejemplo: mitienda.com</span>
+                  )}
+                </label>
               </div>
 
               {launch.status === 'error' && <div className="alert">{launch.error}</div>}
@@ -400,7 +427,7 @@ export default function Wizard() {
           ) : (
             <button
               className="btn btn-primary grow"
-              disabled={!detailsOk || !linkOk || launch.status === 'sending' || launch.status === 'deploying'}
+              disabled={!detailsOk || !linkOk || !domainOk || launch.status === 'sending' || launch.status === 'deploying'}
               onClick={handleLaunch}
             >
               {launch.status === 'sending'
@@ -430,7 +457,10 @@ export default function Wizard() {
             <i />
             <i />
             <i />
-            <span>{details.storeName ? details.storeName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'tu-tienda'}.vercel.app</span>
+            <span>
+              {cleanDomain ||
+                `${details.storeName ? details.storeName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'tu-tienda'}.vercel.app`}
+            </span>
           </div>
           <iframe title="Vista previa de la tienda" srcDoc={previewHtml} sandbox="allow-scripts" />
         </div>
