@@ -6,6 +6,9 @@ export const metadata = {
   description: 'Sube 4 fotos de tu producto ganador, elige colores, fuente y upsells, y lanza tu tienda online al momento.',
 };
 
+// Pone el modo claro/oscuro elegido antes de pintar nada (si no, la página parpadearía)
+const themeScript = `try{var t=localStorage.getItem('lt-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`;
+
 const fontsHref =
   'https://fonts.googleapis.com/css2?' +
   ['Plus+Jakarta+Sans:wght@400;500;600;700;800', ...FONTS.map((f) => f.google)].map((f) => 'family=' + f).join('&') +
@@ -13,8 +16,9 @@ const fontsHref =
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="stylesheet" href={fontsHref} />

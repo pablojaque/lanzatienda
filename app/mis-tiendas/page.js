@@ -1,16 +1,14 @@
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getCurrentUser } from '@/lib/currentUser';
 import DomainPanel from '@/components/DomainPanel';
+import HeaderBar from '@/components/HeaderBar';
 
 export const metadata = { title: 'Mis tiendas — LanzaTienda' };
 export const dynamic = 'force-dynamic';
 
 export default async function MisTiendasPage({ searchParams }) {
   const { pedido } = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user, name } = await getCurrentUser();
 
   // Las reglas de Supabase (RLS) solo devuelven las tiendas de este usuario
   const { data: stores, error } = await supabase
@@ -33,18 +31,12 @@ export default async function MisTiendasPage({ searchParams }) {
   return (
     <>
       <header className="site-header">
-        <div className="container row">
-          <Link href="/" className="brand">
-            Lanza<span>Tienda</span>
-          </Link>
-          <div className="header-actions">
+        <div className="container">
+          <HeaderBar user={user} name={name}>
             <Link href="/crear" className="btn btn-dark btn-sm">
               + Nueva tienda
             </Link>
-            <form action="/auth/salir" method="post">
-              <button className="logout">Salir</button>
-            </form>
-          </div>
+          </HeaderBar>
         </div>
       </header>
 
@@ -71,11 +63,16 @@ export default async function MisTiendasPage({ searchParams }) {
                   <h2>{s.store_name}</h2>
                   <small>Creada el {new Date(s.created_at).toLocaleDateString('es-ES')}</small>
                 </div>
-                {s.url && (
-                  <a href={s.url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
-                    Abrir ↗
-                  </a>
-                )}
+                <div className="store-actions">
+                  <Link href={`/analiticas/${s.id}`} className="btn btn-ghost btn-sm">
+                    📊 Analíticas
+                  </Link>
+                  {s.url && (
+                    <a href={s.url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
+                      Abrir ↗
+                    </a>
+                  )}
+                </div>
               </div>
               {s.url && <p className="store-url">{s.url.replace('https://', '')}</p>}
               <DomainPanel storeId={s.id} domain={s.domain} orderId={orderByStore[s.id] || null} />

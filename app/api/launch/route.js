@@ -46,14 +46,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'El enlace de pago debe empezar por https://' }, { status: 400 });
     }
 
+    const projectName = `${slugify(config.storeName)}-${Math.random().toString(36).slice(2, 7)}`;
     const storeConfig = {
       ...config,
       launchEndsAt: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+      // La tienda avisa a LanzaTienda de cada visita y clic para las analíticas
+      projectName,
+      trackUrl: `${process.env.LANZATIENDA_URL || new URL(request.url).origin}/api/track`,
     };
     const imagePaths = images.map((_, i) => `img/${i + 1}.jpg`);
     const html = renderStore(storeConfig, imagePaths);
-
-    const projectName = `${slugify(config.storeName)}-${Math.random().toString(36).slice(2, 7)}`;
     const files = [
       { file: 'index.html', data: html },
       ...images.map((data, i) => ({ file: imagePaths[i], data, encoding: 'base64' })),

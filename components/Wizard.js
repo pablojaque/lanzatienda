@@ -6,6 +6,7 @@ import { COLORS, FONTS, UPSELLS, DEFAULT_UPSELLS } from '@/lib/storeOptions';
 import { renderStore } from '@/lib/storeTemplate';
 import { normalizeDomain } from '@/lib/domains';
 import DomainPanel from '@/components/DomainPanel';
+import HeaderBar from '@/components/HeaderBar';
 
 const STEPS = ['Fotos', 'Color', 'Fuente', 'Upsells', 'Lanzar'];
 
@@ -32,7 +33,7 @@ function resizeImage(file) {
   });
 }
 
-export default function Wizard() {
+export default function Wizard({ user, name }) {
   const [step, setStep] = useState(0);
   const [images, setImages] = useState([null, null, null, null]);
   const [color, setColor] = useState(COLORS[0].value);
@@ -190,19 +191,11 @@ export default function Wizard() {
     <div className="builder">
       <aside className="panel">
         <div className="panel-top">
-          <div className="row">
-            <Link href="/" className="brand">
-              Lanza<span>Tienda</span>
+          <HeaderBar user={user} name={name}>
+            <Link href="/mis-tiendas" className="logout">
+              Mis tiendas
             </Link>
-            <div className="header-actions">
-              <Link href="/mis-tiendas" className="logout">
-                Mis tiendas
-              </Link>
-              <form action="/auth/salir" method="post">
-                <button className="logout">Salir</button>
-              </form>
-            </div>
-          </div>
+          </HeaderBar>
           <div className="progress">
             {STEPS.map((s, i) => (
               <button

@@ -58,3 +58,65 @@ create policy "Cada usuario ve sus compras de dominio"
   on public.domain_orders for select
   to authenticated
   using ((select auth.uid()) = user_id);
+
+-- Analíticas: cada visita y clic de las tiendas publicadas (lo apunta el servidor de LanzaTienda)
+create table if not exists public.store_events (
+  id bigint generated always as identity primary key,
+  store_id uuid not null references public.stores (id) on delete cascade,
+  type text not null check (type in ('view', 'checkout', 'pay')),
+  visitor text,
+  source text,
+  device text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists store_events_store_created_idx on public.store_events (store_id, created_at);
+
+alter table public.store_events enable row level security;
+
+drop policy if exists "Cada usuario ve las analíticas de sus tiendas" on public.store_events;
+create policy "Cada usuario ve las analíticas de sus tiendas"
+  on public.store_events for select
+  to authenticated
+  using (exists (select 1 from public.stores s where s.id = store_id and s.user_id = (select auth.uid())));
+
+-- Resumen de los últimos p_days días de una tienda (solo devuelve datos si la tienda es tuya)
+create or replace function public.store_stats(p_store uuid, p_days int default 30)
+returns json
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  with ev as (
+    select * from store_events
+    where store_id = p_store and created_at >= (current_date - (p_days - 1))
+  ),
+  days as (
+    select generate_series(current_date - (p_days - 1), current_date, interval '1 day')::date as day
+  ),
+  per_day as (
+    select created_at::date as day,
+      count(*) filter (where type = 'view') as views,
+      count(distinct visitor) filter (where type = 'view') as visitors
+    from ev group by 1
+  )
+  select json_build_object(
+    'views', (select count(*) from ev where type = 'view'),
+    'visitors', (select count(distinct visitor) from ev where type = 'view'),
+    'checkouts', (select count(*) from ev where type = 'checkout'),
+    'pays', (select count(*) from ev where type = 'pay'),
+    'daily', (
+      select json_agg(json_build_object('day', d.day, 'views', coalesce(p.views, 0), 'visitors', coalesce(p.visitors, 0)) order by d.day)
+      from days d left join per_day p on p.day = d.day
+    ),
+    'sources', (
+      select coalesce(json_agg(json_build_object('name', name, 'visits', n) order by n desc), '[]'::json)
+      from (select coalesce(source, 'Directo') as name, count(*) as n from ev where type = 'view' group by 1 order by 2 desc limit 6) s
+    ),
+    'devices', (
+      select coalesce(json_agg(json_build_object('name', name, 'visits', n) order by n desc), '[]'::json)
+      from (select coalesce(device, 'Otro') as name, count(*) as n from ev where type = 'view' group by 1) d
+    )
+  );
+$$;
