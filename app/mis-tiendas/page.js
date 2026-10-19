@@ -5,7 +5,8 @@ import DomainPanel from '@/components/DomainPanel';
 export const metadata = { title: 'Mis tiendas — LanzaTienda' };
 export const dynamic = 'force-dynamic';
 
-export default async function MisTiendasPage() {
+export default async function MisTiendasPage({ searchParams }) {
+  const { pedido } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,6 +17,18 @@ export default async function MisTiendasPage() {
     .from('stores')
     .select('id, store_name, url, domain, created_at')
     .order('created_at', { ascending: false });
+
+  // Compras de dominio en marcha (o la que acaba de pagar, si vuelve de Stripe)
+  const { data: orders } = await supabase
+    .from('domain_orders')
+    .select('id, store_id, status')
+    .in('status', ['pending_payment', 'paid', 'buying', 'bought'])
+    .order('created_at', { ascending: false });
+  const orderByStore = {};
+  for (const o of orders || []) {
+    if (o.status === 'pending_payment' && o.id !== pedido) continue;
+    orderByStore[o.store_id] ??= o.id;
+  }
 
   return (
     <>
@@ -65,7 +78,7 @@ export default async function MisTiendasPage() {
                 )}
               </div>
               {s.url && <p className="store-url">{s.url.replace('https://', '')}</p>}
-              <DomainPanel storeId={s.id} domain={s.domain} />
+              <DomainPanel storeId={s.id} domain={s.domain} orderId={orderByStore[s.id] || null} />
             </article>
           ))}
         </div>
