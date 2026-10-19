@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { displayName } from '@/lib/displayName';
 
 export async function middleware(request) {
   let response = NextResponse.next({ request });
@@ -37,14 +38,21 @@ export async function middleware(request) {
     return res;
   };
 
+  // En la portada solo refrescamos la sesión (para saludar), no obligamos a entrar
+  if (pathname === '/') return response;
+
   // Para crear o ver tus tiendas hay que tener cuenta
   if (!user && pathname !== '/entrar') return redirectTo(`/entrar?next=${encodeURIComponent(pathname)}`);
   // Si ya has iniciado sesión, no tiene sentido ver el formulario de entrada
   if (user && pathname === '/entrar') return redirectTo('/crear');
+  // Recién registrado: antes de nada le pedimos cómo se llama
+  if (user && !displayName(user) && pathname !== '/bienvenida') {
+    return redirectTo(`/bienvenida?next=${encodeURIComponent(pathname)}`);
+  }
 
   return response;
 }
 
 export const config = {
-  matcher: ['/crear/:path*', '/mis-tiendas/:path*', '/entrar'],
+  matcher: ['/', '/crear/:path*', '/mis-tiendas/:path*', '/analiticas/:path*', '/bienvenida', '/entrar'],
 };

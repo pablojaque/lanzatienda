@@ -2,16 +2,22 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { normalizeDomain } from '@/lib/domains';
+import DomainBuy from '@/components/DomainBuy';
 
 const RECHECK_MS = 30000;
+const ORDER_POLL_MS = 4000;
+const ORDER_WORKING = ['pending_payment', 'paid', 'buying', 'bought'];
 
 /**
  * Conectar un dominio propio a una tienda y ver qué DNS hay que poner.
  * - `domain`: el dominio ya guardado para la tienda (si tiene)
  * - `pendingDomain`: dominio escrito al crear la tienda, se conecta solo al aparecer
+ * - `orderId`: compra de dominio en marcha para esta tienda (al volver de pagar)
  */
-export default function DomainPanel({ storeId, domain = null, pendingDomain = '' }) {
+export default function DomainPanel({ storeId, domain = null, pendingDomain = '', orderId = null }) {
   const [info, setInfo] = useState(domain ? { domain } : null);
+  const [order, setOrder] = useState(orderId ? { id: orderId, status: 'pending_payment' } : null);
+  const [mode, setMode] = useState('buy');
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(pendingDomain ? 'connect' : domain ? 'check' : '');
   const [error, setError] = useState('');
@@ -64,6 +70,26 @@ export default function DomainPanel({ storeId, domain = null, pendingDomain = ''
     return () => clearInterval(t);
   }, [info, api]);
 
+  // Compra de dominio en marcha: preguntamos cada pocos segundos hasta que esté conectado
+  const orderWorking = order && ORDER_WORKING.includes(order.status);
+  useEffect(() => {
+    if (!orderWorking) return;
+    let stop = false;
+    async function poll() {
+      const res = await fetch(`/api/domain/order?id=${order.id}`).catch(() => null);
+      const data = res?.ok ? await res.json().catch(() => null) : null;
+      if (stop) return;
+      if (data?.status) setOrder(data);
+      if (data?.status === 'connected') run('check', 'GET');
+      else if (!data?.status || ORDER_WORKING.includes(data.status)) t = setTimeout(poll, ORDER_POLL_MS);
+    }
+    let t = setTimeout(poll, 0);
+    return () => {
+      stop = true;
+      clearTimeout(t);
+    };
+  }, [orderWorking, order?.id, run]);
+
   function connect(e) {
     e.preventDefault();
     const d = normalizeDomain(input);
@@ -77,6 +103,28 @@ export default function DomainPanel({ storeId, domain = null, pendingDomain = ''
     setTimeout(() => setCopied(''), 1500);
   }
 
+  if (orderWorking) {
+    const steps = {
+      pending_payment: 'Comprobando el pago…',
+      paid: 'Pago recibido. Comprando tu dominio…',
+      buying: 'Registrando tu dominio… (suele tardar menos de un minuto)',
+      bought: '¡Dominio comprado! Conectándolo a tu tienda…',
+    };
+    return (
+      <div className="domain-panel">
+        <div className="domain-head">
+          <div>
+            <span className="domain-label">Comprando dominio</span>
+            <b>{order.domain || '…'}</b>
+          </div>
+          <span className="badge wait">En marcha</span>
+        </div>
+        <p className="domain-loading">{steps[order.status]}</p>
+        <p className="domain-sub">Puedes cerrar esta página: terminará solo.</p>
+      </div>
+    );
+  }
+
   if (busy === 'connect') {
     return (
       <div className="domain-panel">
@@ -85,19 +133,34 @@ export default function DomainPanel({ storeId, domain = null, pendingDomain = ''
     );
   }
 
-  // Sin dominio: formulario para conectarlo
+  // Sin dominio: comprar uno nuevo o conectar uno que ya tiene
   if (!info?.domain) {
     return (
       <div className="domain-panel">
-        <h3>¿Tienes un dominio propio?</h3>
-        <p className="domain-sub">Conéctalo y tu tienda se verá en tu dirección, por ejemplo mitienda.com.</p>
-        <form className="domain-form" onSubmit={connect}>
-          <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="mitienda.com" />
-          <button className="btn btn-dark btn-sm" disabled={!input.trim()}>
-            Conectar
+        <h3>Ponle un dominio a tu tienda</h3>
+        <p className="domain-sub">Tu tienda se verá en tu propia dirección, por ejemplo mitienda.com.</p>
+        {order?.status === 'failed' && <div className="alert">{order.error}</div>}
+        <div className="domain-tabs" role="tablist">
+          <button type="button" className={mode === 'buy' ? 'active' : ''} onClick={() => setMode('buy')}>
+            Comprar uno nuevo
           </button>
-        </form>
-        {error && <div className="alert">{error}</div>}
+          <button type="button" className={mode === 'own' ? 'active' : ''} onClick={() => setMode('own')}>
+            Ya tengo uno
+          </button>
+        </div>
+        {mode === 'buy' ? (
+          <DomainBuy storeId={storeId} />
+        ) : (
+          <>
+            <form className="domain-form" onSubmit={connect}>
+              <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="mitienda.com" />
+              <button className="btn btn-dark btn-sm" disabled={!input.trim()}>
+                Conectar
+              </button>
+            </form>
+            {error && <div className="alert">{error}</div>}
+          </>
+        )}
       </div>
     );
   }

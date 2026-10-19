@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import HeaderBar from '@/components/HeaderBar';
+import { getCurrentUser } from '@/lib/currentUser';
 
 const STEPS = [
   { n: '1', title: 'Sube 4 fotos', text: 'Las fotos de tu producto ganador. Nosotros las optimizamos.' },
@@ -14,22 +16,24 @@ const FEATURES = [
   ['🌍', 'Online al momento', 'Tu tienda se publica en internet con su propio enlace en menos de un minuto.'],
 ];
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const { user, name } = await getCurrentUser();
   return (
     <>
       <header className="site-header">
-        <div className="container row">
-          <Link href="/" className="brand">
-            Lanza<span>Tienda</span>
-          </Link>
-          <div className="header-actions">
-            <Link href="/mis-tiendas" className="logout">
-              Mis tiendas
-            </Link>
+        <div className="container">
+          <HeaderBar user={user} name={name}>
+            {!user && (
+              <Link href="/entrar" className="logout">
+                Entrar
+              </Link>
+            )}
             <Link href="/crear" className="btn btn-dark btn-sm">
               Crear mi tienda
             </Link>
-          </div>
+          </HeaderBar>
         </div>
       </header>
 

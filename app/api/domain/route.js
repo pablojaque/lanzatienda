@@ -1,35 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { getOwnedStore, fail } from '@/lib/ownedStore';
 import { normalizeDomain } from '@/lib/domains';
-import { addDomain, getProjectDomain, verifyProjectDomain, getDomainConfig, removeDomain } from '@/lib/vercel';
+import { addDomain, getProjectDomain, verifyProjectDomain, getDomainConfig } from '@/lib/vercel';
+import { detachDomain as detach } from '@/lib/projectDomains';
 
 export const runtime = 'nodejs';
 
 const DEFAULT_IP = '76.76.21.21';
 const DEFAULT_CNAME = 'cname.vercel-dns.com';
-
-const fail = (error, status = 400) => NextResponse.json({ error }, { status });
-
-/** Comprueba la sesión y que la tienda sea del usuario. */
-async function getOwnedStore(storeId) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: fail('Tu sesión ha caducado. Vuelve a iniciar sesión.', 401) };
-  if (!/^[0-9a-f-]{36}$/i.test(storeId || '')) return { error: fail('Tienda no válida.') };
-
-  const admin = createAdminClient();
-  const { data: store } = await admin
-    .from('stores')
-    .select('id, project_name, domain')
-    .eq('id', storeId)
-    .eq('user_id', user.id)
-    .maybeSingle();
-  if (!store) return { error: fail('No encontramos esa tienda en tu cuenta.', 404) };
-  return { admin, store };
-}
 
 function friendlyError(err) {
   if (err.status === 409 || err.code === '23505' || /already|in use/i.test(err.message || ''))
@@ -72,11 +50,6 @@ async function domainStatus(projectName, domain) {
     ready: !!pd.verified && !config.misconfigured,
     records,
   };
-}
-
-async function detach(projectName, domain) {
-  await removeDomain(projectName, domain).catch(() => {});
-  await removeDomain(projectName, `www.${domain}`).catch(() => {});
 }
 
 // Estado del dominio de una tienda

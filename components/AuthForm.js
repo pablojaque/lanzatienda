@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import ThemeToggle from '@/components/ThemeToggle';
 
 // Supabase responde en inglés: traducimos los errores más habituales
 function translate(message = '') {
@@ -16,13 +17,17 @@ function translate(message = '') {
   return message || 'Algo ha fallado. Inténtalo de nuevo.';
 }
 
+const LINK_ERRORS = {
+  enlace: 'El enlace de confirmación no es válido o ha caducado. Inicia sesión.',
+};
+
 export default function AuthForm({ next, linkError }) {
   const [mode, setMode] = useState('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState({
-    state: linkError ? 'error' : 'idle',
-    message: linkError ? 'El enlace de confirmación no es válido o ha caducado. Inicia sesión.' : '',
+    state: LINK_ERRORS[linkError] ? 'error' : 'idle',
+    message: LINK_ERRORS[linkError] || '',
   });
 
   const isSignup = mode === 'signup';
@@ -74,6 +79,9 @@ export default function AuthForm({ next, linkError }) {
 
   return (
     <div className="auth">
+      <div className="auth-theme">
+        <ThemeToggle />
+      </div>
       <div className="auth-card">
         <Link href="/" className="brand">
           Lanza<span>Tienda</span>
