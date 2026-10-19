@@ -1191,36 +1191,6 @@ body,
   padding: 16px 12px 0;
 }
 
-/* Entrar con Google */
-.btn-google {
-  width: 100%;
-  margin-top: 20px;
-  background: var(--card);
-  color: var(--ink);
-  border: 1.5px solid var(--line);
-}
-.btn-google:hover:not(:disabled) {
-  border-color: var(--line-strong);
-}
-.auth-or {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 16px 0 4px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
-}
-.auth-or::before,
-.auth-or::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-.auth-card .auth-tabs {
-  margin-top: 4px;
-}
 
 /* Mis tiendas: botones de cada tienda */
 .store-actions {
