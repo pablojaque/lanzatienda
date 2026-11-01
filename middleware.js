@@ -54,5 +54,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/', '/crear/:path*', '/mis-tiendas/:path*', '/analiticas/:path*', '/bienvenida', '/entrar'],
+  matcher: ['/', '/crear/:path*', '/mis-tiendas/:path*', '/analiticas/:path*', '/pedidos/:path*', '/bienvenida', '/entrar'],
 };

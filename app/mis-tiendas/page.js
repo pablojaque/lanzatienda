@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { getCurrentUser } from '@/lib/currentUser';
 import DomainPanel from '@/components/DomainPanel';
 import HeaderBar from '@/components/HeaderBar';
+import StoreActions from '@/components/StoreActions';
+import PaymentsPanel from '@/components/PaymentsPanel';
 
 export const metadata = { title: 'Mis tiendas — LanzaTienda' };
 export const dynamic = 'force-dynamic';
 
 export default async function MisTiendasPage({ searchParams }) {
-  const { pedido } = await searchParams;
+  const { pedido, cobros } = await searchParams;
   const { supabase, user, name } = await getCurrentUser();
 
   // Las reglas de Supabase (RLS) solo devuelven las tiendas de este usuario
@@ -46,6 +48,8 @@ export default async function MisTiendasPage({ searchParams }) {
 
         {error && <div className="alert">No hemos podido cargar tus tiendas. Recarga la página.</div>}
 
+        <PaymentsPanel justReturned={cobros === 'listo'} />
+
         {!error && !stores?.length && (
           <div className="empty">
             <p>Todavía no has creado ninguna tienda.</p>
@@ -63,18 +67,9 @@ export default async function MisTiendasPage({ searchParams }) {
                   <h2>{s.store_name}</h2>
                   <small>Creada el {new Date(s.created_at).toLocaleDateString('es-ES')}</small>
                 </div>
-                <div className="store-actions">
-                  <Link href={`/analiticas/${s.id}`} className="btn btn-ghost btn-sm">
-                    📊 Analíticas
-                  </Link>
-                  {s.url && (
-                    <a href={s.url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
-                      Abrir ↗
-                    </a>
-                  )}
-                </div>
               </div>
               {s.url && <p className="store-url">{s.url.replace('https://', '')}</p>}
+              <StoreActions store={s} />
               <DomainPanel storeId={s.id} domain={s.domain} orderId={orderByStore[s.id] || null} />
             </article>
           ))}

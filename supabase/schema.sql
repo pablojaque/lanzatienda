@@ -120,3 +120,21 @@ as $$
     )
   );
 $$;
+
+-- Editar tiendas: todo lo que define cada tienda (productos, colores, upsells…)
+alter table public.stores add column if not exists config jsonb;
+
+-- Cobro con tarjeta en las tiendas: la cuenta de Stripe (Connect) de cada usuario
+create table if not exists public.stripe_accounts (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  account_id text not null unique,
+  created_at timestamptz not null default now()
+);
+
+alter table public.stripe_accounts enable row level security;
+
+drop policy if exists "Cada usuario ve su cuenta de cobros" on public.stripe_accounts;
+create policy "Cada usuario ve su cuenta de cobros"
+  on public.stripe_accounts for select
+  to authenticated
+  using ((select auth.uid()) = user_id);
