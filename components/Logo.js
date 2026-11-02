@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-/** Marca de LanzaTienda: doble flecha hacia arriba (lanzar) en el color de la marca. */
+/** Marca de Dropshype: doble flecha hacia arriba (subir, hype) en el color de la marca. */
 export function LogoMark({ size = 28 }) {
   return (
     <span className="brand-mark" style={{ width: size, height: size }} aria-hidden="true">
@@ -15,9 +15,9 @@ export function LogoMark({ size = 28 }) {
 /** Logo completo que lleva a la portada. */
 export default function Logo({ className = '' }) {
   return (
-    <Link href="/" className={`brand ${className}`} aria-label="LanzaTienda, ir a la portada">
+    <Link href="/" className={`brand ${className}`} aria-label="Dropshype, ir a la portada">
       <LogoMark />
-      <span>LanzaTienda</span>
+      <span>Dropshype</span>
     </Link>
   );
 }

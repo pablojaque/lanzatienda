@@ -14,7 +14,7 @@ function siteFiles(config, projectName, apiBase) {
   const pages = renderSite(config, {
     imageUrl: (img) => imagePath(img.sha),
     baseUrl,
-    // La tienda avisa a LanzaTienda de visitas y clics, y le pide el cobro con tarjeta
+    // La tienda avisa a Dropshype de visitas y clics, y le pide el cobro con tarjeta
     api: { track: `${apiBase}/api/track`, checkout: `${apiBase}/api/store-checkout`, p: projectName },
   });
   const images = new Map();

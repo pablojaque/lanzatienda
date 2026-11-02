@@ -72,13 +72,13 @@ const FEATURES = [
 ];
 
 const FAQ = [
-  ['¿Necesito saber programar?', 'No. Subes fotos, eliges colores y escribes el precio. LanzaTienda crea la web y la publica por ti.'],
+  ['¿Necesito saber programar?', 'No. Subes fotos, eliges colores y escribes el precio. Dropshype crea la web y la publica por ti.'],
   [
     '¿Cuánto cuesta?',
     'Crear y publicar tiendas es gratis. Solo pagas, si quieres, tu dominio propio. Las ventas con tarjeta tienen la comisión normal de Stripe.',
   ],
   ['¿Cómo cobro a mis clientes?', 'Activa los cobros con tarjeta (con Stripe) y tus clientes pagan dentro de la tienda. También puedes usar tu propio enlace de pago.'],
-  ['¿Puedo usar mi propio dominio?', 'Sí. Puedes comprar uno dentro de LanzaTienda, que se conecta solo, o conectar uno que ya tengas.'],
+  ['¿Puedo usar mi propio dominio?', 'Sí. Puedes comprar uno dentro de Dropshype, que se conecta solo, o conectar uno que ya tengas.'],
   ['¿Puedo cambiar la tienda después?', 'Claro. Desde «Mis tiendas» la editas cuando quieras y los cambios se publican en segundos.'],
 ];
 
@@ -130,7 +130,7 @@ export default async function Home() {
               Tu tienda de dropshipping, <em>lista en 2 minutos.</em>
             </h1>
             <p className="lp-sub rise d2">
-              Sube tus productos, elige tu marca y lánzala. LanzaTienda crea la web, la publica y te da el enlace para empezar a
+              Sube tus productos, elige tu marca y lánzala. Dropshype crea la web, la publica y te da el enlace para empezar a
               vender hoy.
             </p>
             <div className="lp-ctas rise d3">
@@ -336,9 +336,9 @@ export default async function Home() {
         <div className="container">
           <span className="brand">
             <LogoMark size={22} />
-            <span>LanzaTienda</span>
+            <span>Dropshype</span>
           </span>
-          <span>© {new Date().getFullYear()} LanzaTienda · Hecho para dropshippers</span>
+          <span>© {new Date().getFullYear()} Dropshype · Hecho para dropshippers</span>
         </div>
       </footer>
     </>

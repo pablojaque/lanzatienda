@@ -2,7 +2,7 @@ import { getCurrentUser } from '@/lib/currentUser';
 import { safeNext } from '@/lib/safeNext';
 import NameForm from '@/components/NameForm';
 
-export const metadata = { title: 'Bienvenido — LanzaTienda' };
+export const metadata = { title: 'Bienvenido — Dropshype' };
 export const dynamic = 'force-dynamic';
 
 export default async function BienvenidaPage({ searchParams }) {

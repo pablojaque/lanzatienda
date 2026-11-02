@@ -6,7 +6,7 @@ import { listPaidCheckouts, stripeEnabled } from '@/lib/stripe';
 import { getUserAccountId } from '@/lib/payments';
 import HeaderBar from '@/components/HeaderBar';
 
-export const metadata = { title: 'Pedidos — LanzaTienda' };
+export const metadata = { title: 'Pedidos — Dropshype' };
 export const dynamic = 'force-dynamic';
 
 const eur = (cents) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
@@ -74,7 +74,7 @@ export default async function PedidosPage({ params }) {
           </div>
         </div>
 
-        {problem === 'off' && <div className="empty">Los cobros con tarjeta todavía no están activados en LanzaTienda.</div>}
+        {problem === 'off' && <div className="empty">Los cobros con tarjeta todavía no están activados en Dropshype.</div>}
         {problem === 'noaccount' && (
           <div className="empty">
             <p>Aquí verás los pedidos pagados con tarjeta, con la dirección de envío de cada cliente.</p>

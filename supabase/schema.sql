@@ -1,4 +1,4 @@
--- LanzaTienda: tabla de tiendas. Pégalo en Supabase → SQL Editor → Run.
+-- Dropshype: tabla de tiendas. Pégalo en Supabase → SQL Editor → Run.
 
 create table if not exists public.stores (
   id uuid primary key default gen_random_uuid(),
@@ -14,7 +14,7 @@ create table if not exists public.stores (
 create index if not exists stores_user_id_idx on public.stores (user_id);
 
 -- Cada usuario solo puede VER sus tiendas. Crear o cambiar tiendas solo lo hace
--- el servidor de LanzaTienda (con la secret key), nunca el navegador.
+-- el servidor de Dropshype (con la secret key), nunca el navegador.
 alter table public.stores enable row level security;
 
 drop policy if exists "Cada usuario ve sus tiendas" on public.stores;
@@ -26,7 +26,7 @@ create policy "Cada usuario ve sus tiendas"
 -- Si la tabla stores ya existía de antes, esto le añade la columna del dominio
 alter table public.stores add column if not exists domain text unique;
 
--- Compras de dominios: el usuario paga en Stripe y LanzaTienda lo compra en Vercel.
+-- Compras de dominios: el usuario paga en Stripe y Dropshype lo compra en Vercel.
 -- Estados: pending_payment → paid → buying → bought → connected (o failed / canceled)
 create table if not exists public.domain_orders (
   id uuid primary key default gen_random_uuid(),
@@ -59,7 +59,7 @@ create policy "Cada usuario ve sus compras de dominio"
   to authenticated
   using ((select auth.uid()) = user_id);
 
--- Analíticas: cada visita y clic de las tiendas publicadas (lo apunta el servidor de LanzaTienda)
+-- Analíticas: cada visita y clic de las tiendas publicadas (lo apunta el servidor de Dropshype)
 create table if not exists public.store_events (
   id bigint generated always as identity primary key,
   store_id uuid not null references public.stores (id) on delete cascade,

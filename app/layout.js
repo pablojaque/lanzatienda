@@ -2,7 +2,7 @@ import './globals.css';
 import { FONTS } from '@/lib/storeOptions';
 
 export const metadata = {
-  title: 'LanzaTienda — Tu tienda de dropshipping en 2 minutos',
+  title: 'Dropshype — Tu tienda de dropshipping en 2 minutos',
   description: 'Sube tus productos, elige colores, fuente y upsells, y lanza tu tienda de dropshipping al momento.',
 };
 

@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/currentUser';
 import HeaderBar from '@/components/HeaderBar';
 import VisitsChart from '@/components/VisitsChart';
 
-export const metadata = { title: 'Analíticas — LanzaTienda' };
+export const metadata = { title: 'Analíticas — Dropshype' };
 export const dynamic = 'force-dynamic';
 
 const RANGES = [7, 30, 90];
@@ -86,7 +86,7 @@ export default async function AnaliticasPage({ params, searchParams }) {
 
         {error && (
           <div className="alert">
-            No hemos podido cargar las analíticas. Si acabas de actualizar LanzaTienda, revisa que hayas ejecutado el SQL nuevo
+            No hemos podido cargar las analíticas. Si acabas de actualizar Dropshype, revisa que hayas ejecutado el SQL nuevo
             en Supabase.
           </div>
         )}
@@ -112,7 +112,7 @@ export default async function AnaliticasPage({ params, searchParams }) {
         </div>
 
         <p className="hint">
-          Contamos las visitas desde que la tienda se publica con LanzaTienda. «Fueron a pagar» son los clics en el botón de
+          Contamos las visitas desde que la tienda se publica con Dropshype. «Fueron a pagar» son los clics en el botón de
           pago; la venta se termina en tu pasarela de pago.
         </p>
       </main>

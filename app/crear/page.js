@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Wizard from '@/components/Wizard';
 import { getCurrentUser } from '@/lib/currentUser';
 
-export const metadata = { title: 'Crear mi tienda — LanzaTienda' };
+export const metadata = { title: 'Crear mi tienda — Dropshype' };
 export const dynamic = 'force-dynamic';
 
 // /crear crea una tienda nueva; /crear?tienda=<id> edita una que ya tienes
@@ -26,7 +26,7 @@ export default async function CrearPage({ searchParams }) {
           <h1>{store ? 'Esta tienda no se puede editar' : 'No encontramos esa tienda'}</h1>
           <p className="muted">
             {store
-              ? 'Se creó antes de que LanzaTienda guardara los datos para editarla. Puedes crear una nueva con los cambios y borrar esta.'
+              ? 'Se creó antes de que Dropshype guardara los datos para editarla. Puedes crear una nueva con los cambios y borrar esta.'
               : 'Puede que la hayas borrado o que sea de otra cuenta.'}
           </p>
           <Link href="/mis-tiendas" className="btn btn-primary">
