@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
-  Email de confirmación de cuenta de LanzaTienda.
-  Asunto:  Confirma tu cuenta de LanzaTienda 🚀
+  Email de confirmación de cuenta de Dropshype.
+  Asunto:  Confirma tu cuenta de Dropshype 🚀
   Dónde:   Supabase → Authentication → Emails → Templates → "Confirm signup"
            (pega TODO este archivo en "Message body" y el asunto en "Subject")
   {{ .ConfirmationURL }} y {{ .Email }} los rellena Supabase solo: no los cambies.
@@ -11,7 +11,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light only" />
-    <title>Confirma tu cuenta de LanzaTienda</title>
+    <title>Confirma tu cuenta de Dropshype</title>
   </head>
   <body style="margin:0;padding:0;background:#fafaf7;">
     <!-- Texto que se ve en la bandeja de entrada, al lado del asunto -->
@@ -25,7 +25,7 @@
             <!-- Marca -->
             <tr>
               <td align="center" style="padding:0 0 20px;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.6px;color:#0f0f12;">
-                Lanza<span style="color:#5b3df5;">Tienda</span>
+                Dropshype
               </td>
             </tr>
 
@@ -51,7 +51,7 @@
                     <td align="center" style="padding-bottom:28px;">
                       <a
                         href="{{ .ConfirmationURL }}"
-                        style="display:inline-block;background:#5b3df5;color:#ffffff;text-decoration:none;font-size:17px;font-weight:700;padding:16px 32px;border-radius:14px;"
+                        style="display:inline-block;background:#f25418;color:#ffffff;text-decoration:none;font-size:17px;font-weight:700;padding:16px 32px;border-radius:14px;"
                       >
                         Confirmar mi cuenta
                       </a>
@@ -71,7 +71,7 @@
                   <tr>
                     <td style="padding-top:24px;font-size:13px;line-height:1.55;color:#6b6b76;">
                       ¿El botón no funciona? Copia y pega este enlace en tu navegador:<br />
-                      <a href="{{ .ConfirmationURL }}" style="color:#5b3df5;word-break:break-all;">{{ .ConfirmationURL }}</a>
+                      <a href="{{ .ConfirmationURL }}" style="color:#f25418;word-break:break-all;">{{ .ConfirmationURL }}</a>
                     </td>
                   </tr>
                 </table>
@@ -81,7 +81,7 @@
             <!-- Pie -->
             <tr>
               <td align="center" style="padding:20px 12px 0;font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;font-size:12.5px;line-height:1.55;color:#6b6b76;">
-                Has recibido este email porque alguien creó una cuenta en LanzaTienda con {{ .Email }}.<br />
+                Has recibido este email porque alguien creó una cuenta en Dropshype con {{ .Email }}.<br />
                 Si no has sido tú, ignóralo: sin confirmar, la cuenta no se activa.
               </td>
             </tr>

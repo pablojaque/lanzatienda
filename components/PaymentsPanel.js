@@ -25,7 +25,7 @@ export default function PaymentsPanel({ justReturned = false }) {
     setError(data.error || 'Algo ha fallado. Inténtalo de nuevo.');
   }
 
-  // Hasta que LanzaTienda tenga Stripe configurado, no enseñamos nada
+  // Hasta que Dropshype tenga Stripe configurado, no enseñamos nada
   if (!status || status.available === false || status.error) return null;
 
   return (

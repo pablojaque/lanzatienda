@@ -5,7 +5,7 @@ import HeaderBar from '@/components/HeaderBar';
 import StoreActions from '@/components/StoreActions';
 import PaymentsPanel from '@/components/PaymentsPanel';
 
-export const metadata = { title: 'Mis tiendas — LanzaTienda' };
+export const metadata = { title: 'Mis tiendas — Dropshype' };
 export const dynamic = 'force-dynamic';
 
 export default async function MisTiendasPage({ searchParams }) {

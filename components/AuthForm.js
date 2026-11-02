@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
-import ThemeToggle from '@/components/ThemeToggle';
 
 // Supabase responde en inglés: traducimos los errores más habituales
 function translate(message = '') {
@@ -79,9 +78,6 @@ export default function AuthForm({ next, linkError }) {
 
   return (
     <div className="auth">
-      <div className="auth-theme">
-        <ThemeToggle />
-      </div>
       <div className="auth-card">
         <Logo />
         <h1>{isSignup ? 'Crea tu cuenta gratis' : 'Bienvenido de nuevo'}</h1>

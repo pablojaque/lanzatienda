@@ -1,78 +1,9 @@
 /*
-  LanzaTienda — sistema de diseño
-  Un solo color de marca (naranja «lanzamiento»), neutros cálidos y Geist.
-  Todos los colores son variables: el modo oscuro solo cambia sus valores.
+  Dropshype — sistema de diseño
+  Tema oscuro, un solo color de marca (naranja «lanzamiento»), neutros cálidos y Geist.
+  Todos los colores son variables: cambia aquí y cambia toda la web.
 */
 :root {
-  --ink: #0c0a09;
-  --text-2: #44403c;
-  --muted: #78716c;
-  --line: #e7e5e4;
-  --line-strong: #d6d3d1;
-  --bg: #fafaf9;
-  --card: #ffffff;
-  --soft: #f5f5f4;
-  --soft-2: #efeeec;
-  --accent: #d4440c;
-  --accent-hover: #b93a09;
-  --accent-soft: #fff1ea;
-  --accent-glow: rgba(234, 88, 12, 0.18);
-  --on-accent: #ffffff;
-  --lime: var(--accent);
-  --mark: var(--accent-soft);
-  /* Botones y bloques "al revés" (oscuros en modo claro, claros en modo oscuro) */
-  --inverse-bg: #0c0a09;
-  --inverse-fg: #fafaf9;
-  --inverse-pop: #ff7a45;
-  --danger-bg: #fef2f2;
-  --danger-fg: #b91c1c;
-  --danger-line: #fecaca;
-  --ok-bg: #dcfce7;
-  --ok-fg: #15803d;
-  --wait-bg: #fef3c7;
-  --wait-fg: #b45309;
-  --shadow: rgba(28, 25, 23, 0.08);
-  --shadow-lg: 0 1px 2px rgba(28, 25, 23, 0.04), 0 12px 32px -8px rgba(28, 25, 23, 0.12);
-  --grid-dot: rgba(28, 25, 23, 0.09);
-  --radius: 14px;
-  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  color-scheme: light;
-}
-
-/* Modo oscuro: el del sistema, salvo que el usuario elija otro con el botón */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --ink: #f5f5f4;
-    --text-2: #d6d3d1;
-    --muted: #a19d9a;
-    --line: #262423;
-    --line-strong: #383533;
-    --bg: #0b0a0a;
-    --card: #131211;
-    --soft: #1b1918;
-    --soft-2: #0f0e0e;
-    --accent: #f25418;
-    --accent-hover: #ff6a30;
-    --accent-soft: rgba(242, 84, 24, 0.12);
-    --accent-glow: rgba(242, 84, 24, 0.22);
-    --inverse-bg: #f5f5f4;
-    --inverse-fg: #0c0a09;
-    --inverse-pop: #d4440c;
-    --danger-bg: #2a1215;
-    --danger-fg: #fca5a5;
-    --danger-line: #5c1f24;
-    --ok-bg: #0f2e1b;
-    --ok-fg: #86efac;
-    --wait-bg: #2e2410;
-    --wait-fg: #fcd34d;
-    --shadow: rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -12px rgba(0, 0, 0, 0.7);
-    --grid-dot: rgba(245, 245, 244, 0.07);
-    color-scheme: dark;
-  }
-}
-:root[data-theme='dark'] {
   --ink: #f5f5f4;
   --text-2: #d6d3d1;
   --muted: #a19d9a;
@@ -86,6 +17,8 @@
   --accent-hover: #ff6a30;
   --accent-soft: rgba(242, 84, 24, 0.12);
   --accent-glow: rgba(242, 84, 24, 0.22);
+  --on-accent: #ffffff;
+  /* Botones y bloques "al revés" (claros sobre el fondo oscuro) */
   --inverse-bg: #f5f5f4;
   --inverse-fg: #0c0a09;
   --inverse-pop: #d4440c;
@@ -99,6 +32,9 @@
   --shadow: rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -12px rgba(0, 0, 0, 0.7);
   --grid-dot: rgba(245, 245, 244, 0.07);
+  --radius: 14px;
+  --font: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
   color-scheme: dark;
 }
 
@@ -230,6 +166,12 @@ body,
 }
 .btn-primary:hover:not(:disabled) {
   background: var(--accent-hover);
+}
+.btn-primary:disabled {
+  opacity: 1;
+  background: var(--soft);
+  color: var(--muted);
+  box-shadow: none;
 }
 .btn-dark {
   background: var(--inverse-bg);
@@ -1000,6 +942,7 @@ body,
   height: 100vh;
 }
 .panel {
+  min-width: 0;
   background: var(--card);
   border-right: 1px solid var(--line);
   display: flex;
@@ -1291,7 +1234,7 @@ body,
 .field-error {
   font-weight: 600;
   font-size: 12.5px;
-  color: #dc2626;
+  color: var(--danger-fg);
 }
 .alert {
   margin-top: 16px;
@@ -1306,6 +1249,7 @@ body,
 
 /* Preview */
 .preview {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 18px 28px 28px;
@@ -1458,11 +1402,6 @@ body,
   max-width: 420px;
   width: 100%;
   text-align: center;
-}
-.auth-theme {
-  position: fixed;
-  top: 16px;
-  right: 16px;
 }
 .auth::before {
   content: '';
@@ -1821,6 +1760,9 @@ body,
   border-bottom: 1px solid var(--line);
 }
 .drawer-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 12px;
   border-radius: 10px;
   font-weight: 700;
@@ -1864,9 +1806,28 @@ body,
 .drawer-store b {
   display: block;
   font-size: 14.5px;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.drawer-store-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 2px;
+}
+.drawer-store-links a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.drawer-store-links a:hover {
+  color: var(--accent);
+}
+.drawer-foot .logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 .drawer-store small {
   color: var(--muted);
@@ -2149,8 +2110,8 @@ body,
   max-width: 200px;
 }
 .btn-danger:hover:not(:disabled) {
-  border-color: #dc2626;
-  color: #dc2626;
+  border-color: var(--danger-line);
+  color: var(--danger-fg);
 }
 .store-actions {
   margin-top: 12px;
@@ -2365,7 +2326,7 @@ body,
 
 @media (max-width: 900px) {
   .builder {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
   }
   .panel {

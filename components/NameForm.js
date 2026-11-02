@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
-import ThemeToggle from '@/components/ThemeToggle';
 
 /** Después de registrarse: ¿cómo te llamas? (lo usamos para saludarte). */
 export default function NameForm({ next, initial = '', editing = false }) {
@@ -27,9 +26,6 @@ export default function NameForm({ next, initial = '', editing = false }) {
 
   return (
     <div className="auth">
-      <div className="auth-theme">
-        <ThemeToggle />
-      </div>
       <div className="auth-card">
         <Logo />
         <div className="done-emoji">👋</div>

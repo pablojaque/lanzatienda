@@ -2,12 +2,9 @@ import './globals.css';
 import { FONTS } from '@/lib/storeOptions';
 
 export const metadata = {
-  title: 'LanzaTienda — Tu tienda de dropshipping en 2 minutos',
-  description: 'Sube 4 fotos de tu producto ganador, elige colores, fuente y upsells, y lanza tu tienda online al momento.',
+  title: 'Dropshype — Tu tienda de dropshipping en 2 minutos',
+  description: 'Sube tus productos, elige colores, fuente y upsells, y lanza tu tienda de dropshipping al momento.',
 };
-
-// Pone el modo claro/oscuro elegido antes de pintar nada (si no, la página parpadearía)
-const themeScript = `try{var t=localStorage.getItem('lt-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}`;
 
 const fontsHref =
   'https://fonts.googleapis.com/css2?' +
@@ -16,9 +13,9 @@ const fontsHref =
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <meta name="theme-color" content="#0b0a0a" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="stylesheet" href={fontsHref} />
