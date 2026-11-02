@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -31,9 +31,7 @@ export default function NameForm({ next, initial = '', editing = false }) {
         <ThemeToggle />
       </div>
       <div className="auth-card">
-        <Link href="/" className="brand">
-          Lanza<span>Tienda</span>
-        </Link>
+        <Logo />
         <div className="done-emoji">👋</div>
         <h1>{editing ? 'Cambia tu nombre' : '¡Bienvenido! ¿Cómo te llamas?'}</h1>
         <p className="muted">Así sabremos cómo saludarte cada vez que entres.</p>
