@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { COUNTRIES } from '@/lib/contact';
+import Icon from '@/components/Icon';
 
 const eur = (cents) => (cents / 100).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 
@@ -115,7 +116,7 @@ export default function DomainBuy({ storeId }) {
           </button>
         </div>
         <p className="buy-note">
-          🔒 Pago seguro con Stripe. Incluye 1 año de dominio, se conecta solo a tu tienda y no tienes que tocar DNS. Si algo
+          <Icon name="lock" size={13} /> Pago seguro con Stripe. Incluye 1 año de dominio, se conecta solo a tu tienda y no tienes que tocar DNS. Si algo
           falla, te devolvemos el dinero automáticamente.
         </p>
       </form>

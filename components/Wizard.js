@@ -8,6 +8,7 @@ import { MAX_PHOTOS, MAX_PRODUCTS, imagePath, newProductId, normalizeConfig } fr
 import { normalizeDomain } from '@/lib/domains';
 import DomainPanel from '@/components/DomainPanel';
 import HeaderBar from '@/components/HeaderBar';
+import Icon from '@/components/Icon';
 
 const STEPS = ['Productos', 'Color', 'Fuente', 'Upsells', 'Lanzar'];
 
@@ -266,7 +267,9 @@ export default function Wizard({ user, name, initial = null }) {
     return (
       <div className="done">
         <div className="done-card">
-          <div className="done-emoji">🎉</div>
+          <div className="done-icon ok">
+            <Icon name="check" size={26} strokeWidth={2.2} />
+          </div>
           <h1>{editing ? '¡Cambios publicados!' : '¡Tu tienda está online!'}</h1>
           <p>
             {editing
@@ -288,7 +291,7 @@ export default function Wizard({ user, name, initial = null }) {
             </button>
           </div>
           <a href={shownUrl} target="_blank" rel="noreferrer" className="btn btn-primary btn-xl">
-            Abrir mi tienda ↗
+            Abrir mi tienda <Icon name="external" />
           </a>
           <p className="hint">Siempre la tendrás guardada en «Mis tiendas».</p>
           {!editing && launch.storeId && <DomainPanel storeId={launch.storeId} pendingDomain={cleanDomain || ''} />}
@@ -324,7 +327,11 @@ export default function Wizard({ user, name, initial = null }) {
               Mis tiendas
             </Link>
           </HeaderBar>
-          {editing && <p className="editing-tag">✏️ Editando «{saved.storeName}»</p>}
+          {editing && (
+            <p className="editing-tag">
+              <Icon name="edit" size={14} /> Editando «{saved.storeName}»
+            </p>
+          )}
           <div className="progress">
             {STEPS.map((s, i) => (
               <button
@@ -590,8 +597,8 @@ export default function Wizard({ user, name, initial = null }) {
                 : launch.status === 'deploying'
                   ? 'Publicando en internet…'
                   : editing
-                    ? '💾 Publicar cambios'
-                    : '🚀 Lanzar mi tienda'}
+                    ? 'Publicar cambios'
+                    : 'Lanzar mi tienda'}
             </button>
           )}
         </div>

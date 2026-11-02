@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Logo from '@/components/Logo';
+import Icon from '@/components/Icon';
 import { createClient } from '@/lib/supabase/client';
 
 // Supabase responde en inglés: traducimos los errores más habituales
@@ -63,7 +64,9 @@ export default function AuthForm({ next, linkError }) {
     return (
       <div className="auth">
         <div className="auth-card">
-          <div className="done-emoji">📬</div>
+          <div className="done-icon">
+            <Icon name="mail" size={24} />
+          </div>
           <h1>Revisa tu email</h1>
           <p className="muted">
             Te hemos enviado un enlace a <b>{email}</b>. Púlsalo para activar tu cuenta y empezar a crear tu tienda.

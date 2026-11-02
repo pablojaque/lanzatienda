@@ -4,6 +4,7 @@ import DomainPanel from '@/components/DomainPanel';
 import HeaderBar from '@/components/HeaderBar';
 import StoreActions from '@/components/StoreActions';
 import PaymentsPanel from '@/components/PaymentsPanel';
+import Icon from '@/components/Icon';
 
 export const metadata = { title: 'Mis tiendas — Dropshype' };
 export const dynamic = 'force-dynamic';
@@ -36,7 +37,7 @@ export default async function MisTiendasPage({ searchParams }) {
         <div className="container">
           <HeaderBar user={user} name={name}>
             <Link href="/crear" className="btn btn-dark btn-sm">
-              + Nueva tienda
+              <Icon name="plus" /> Nueva tienda
             </Link>
           </HeaderBar>
         </div>
@@ -54,7 +55,7 @@ export default async function MisTiendasPage({ searchParams }) {
           <div className="empty">
             <p>Todavía no has creado ninguna tienda.</p>
             <Link href="/crear" className="btn btn-primary">
-              🚀 Crear mi primera tienda
+              <Icon name="plus" /> Crear mi primera tienda
             </Link>
           </div>
         )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Icon from '@/components/Icon';
 
 /** Activar los cobros con tarjeta (Stripe) en todas tus tiendas y abrir tu panel de Stripe. */
 export default function PaymentsPanel({ justReturned = false }) {
@@ -31,7 +32,10 @@ export default function PaymentsPanel({ justReturned = false }) {
   return (
     <section className={`pay-panel ${status.ready ? 'ok' : ''}`}>
       <div className="pay-text">
-        <h3>{status.ready ? '💳 Cobros con tarjeta activados' : '💳 Cobra con tarjeta en tus tiendas'}</h3>
+        <h3>
+          <Icon name={status.ready ? 'check' : 'card'} size={18} />
+          {status.ready ? 'Cobros con tarjeta activados' : 'Cobra con tarjeta en tus tiendas'}
+        </h3>
         <p>
           {status.ready
             ? 'Tus clientes pagan dentro de tu tienda y el dinero llega a tu cuenta de Stripe. Los pedidos con su dirección los ves en «Pedidos».'
@@ -45,7 +49,7 @@ export default function PaymentsPanel({ justReturned = false }) {
       </div>
       {status.ready ? (
         <button className="btn btn-ghost btn-sm" disabled={busy} onClick={() => go('/api/stripe/dashboard')}>
-          Ver mis pagos en Stripe ↗
+          Ver mis pagos en Stripe <Icon name="external" />
         </button>
       ) : (
         <button className="btn btn-primary btn-sm" disabled={busy} onClick={() => go('/api/stripe/connect')}>
