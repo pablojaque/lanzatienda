@@ -1,9 +1,8 @@
 import Logo from '@/components/Logo';
 import SideMenu from '@/components/SideMenu';
-import ThemeToggle from '@/components/ThemeToggle';
 
 /**
- * Barra de arriba común: menú (si hay sesión), marca, saludo, modo claro/oscuro y acciones.
+ * Barra de arriba común: menú (si hay sesión), marca, saludo y acciones.
  * `user` y `name` vienen de getCurrentUser(); `children` son los botones de la derecha.
  */
 export default function HeaderBar({ user, name, nav = null, children }) {
@@ -16,7 +15,6 @@ export default function HeaderBar({ user, name, nav = null, children }) {
       {nav}
       <div className="header-actions">
         {user && name && <span className="hello">Hola, {name} 👋</span>}
-        <ThemeToggle />
         {children}
       </div>
     </div>
