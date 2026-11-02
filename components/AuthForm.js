@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Logo from '@/components/Logo';
 import { createClient } from '@/lib/supabase/client';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -83,9 +83,7 @@ export default function AuthForm({ next, linkError }) {
         <ThemeToggle />
       </div>
       <div className="auth-card">
-        <Link href="/" className="brand">
-          Lanza<span>Tienda</span>
-        </Link>
+        <Logo />
         <h1>{isSignup ? 'Crea tu cuenta gratis' : 'Bienvenido de nuevo'}</h1>
         <p className="muted">
           {isSignup ? 'Necesitas una cuenta para crear y guardar tus tiendas.' : 'Entra para seguir creando tus tiendas.'}

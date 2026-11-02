@@ -11,7 +11,7 @@ const themeScript = `try{var t=localStorage.getItem('lt-theme');if(t==='light'||
 
 const fontsHref =
   'https://fonts.googleapis.com/css2?' +
-  ['Plus+Jakarta+Sans:wght@400;500;600;700;800', ...FONTS.map((f) => f.google)].map((f) => 'family=' + f).join('&') +
+  ['Geist:wght@400..700', 'Geist+Mono:wght@400..600', ...FONTS.map((f) => f.google)].map((f) => 'family=' + f).join('&') +
   '&display=swap';
 
 export default function RootLayout({ children }) {
@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         <link rel="stylesheet" href={fontsHref} />
         <link
           rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23111'/><text x='50' y='70' font-size='60' text-anchor='middle'>🚀</text></svg>"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%23f25418'/><g fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 13l6-6 6 6'/><path d='M6 19l6-6 6 6' opacity='.55'/></g></svg>"
         />
       </head>
       <body>{children}</body>
