@@ -56,7 +56,7 @@ export async function POST(request) {
   if (!accountId) return fallback();
 
   // Precios siempre desde lo guardado, nunca desde lo que diga el navegador
-  const order = computeOrder(store.config, { product: body.product, qty: body.qty, addons: body.addons });
+  const order = computeOrder(store.config, { product: body.product, qty: body.qty, addons: body.addons, variant: body.variant });
   if (!order || order.total < 50) return json({ error: 'Ese pedido no es válido.' }, 400);
 
   try {
@@ -75,6 +75,8 @@ export async function POST(request) {
       })),
       shipping_address_collection: { allowed_countries: SHIPPING_COUNTRIES },
       phone_number_collection: { enabled: true },
+      // Cupones: el dueño los crea en su panel de Stripe
+      ...((store.config.upsells || []).includes('promoCodes') ? { allow_promotion_codes: true } : {}),
       success_url: `${back}?pedido=ok`,
       cancel_url: back,
       metadata: { storeId: store.id, items: summary.slice(0, 480) },
