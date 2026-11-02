@@ -1,12 +1,24 @@
 'use client';
 
-import { BUTTON_STYLES, COLORS, FONTS, THEMES } from '@/lib/storeOptions';
+import { useState } from 'react';
+import { BUTTON_STYLES, COLORS, FONT_CATEGORIES, FONTS, THEMES } from '@/lib/storeOptions';
 import { Choice, Section } from '@/components/editor/ui';
 import Icon from '@/components/Icon';
+
+// Muestras del selector: cada fuente solo con las letras de su nombre (pesa unos pocos KB en total)
+const SAMPLE_TEXT = [...new Set(FONTS.map((f) => f.name).join(''))].join('');
+const SAMPLES_HREF =
+  'https://fonts.googleapis.com/css2?' +
+  FONTS.map((f) => 'family=' + f.google.split(':')[0]).join('&') +
+  '&text=' +
+  encodeURIComponent(SAMPLE_TEXT) +
+  '&display=swap';
 
 /** Paso 2: cómo se ve la tienda (logo, colores, fondo, botones y letra). */
 export default function DesignStep({ store, setStore, multi, onLogo, removeLogo }) {
   const set = (patch) => setStore((s) => ({ ...s, ...patch }));
+  const [fontCat, setFontCat] = useState(() => FONTS.find((f) => f.name === store.font)?.category || 'moderna');
+  const shownFonts = FONTS.filter((f) => f.category === fontCat);
 
   return (
     <>
@@ -71,14 +83,31 @@ export default function DesignStep({ store, setStore, multi, onLogo, removeLogo 
         />
       </Section>
 
-      <Section title="Tipografía" hint="La letra marca la personalidad de tu tienda.">
-        <div className="font-list">
-          {FONTS.map((f) => (
+      <Section title="Tipografía" hint={`${FONTS.length} letras para elegir. La que elijas se ve al momento en la vista previa.`}>
+        <link rel="stylesheet" href={SAMPLES_HREF} />
+        <div className="font-cats" role="tablist">
+          {FONT_CATEGORIES.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className={fontCat === c.id ? 'on' : ''}
+              onClick={() => setFontCat(c.id)}
+            >
+              {c.name}
+              <small>{FONTS.filter((f) => f.category === c.id).length}</small>
+            </button>
+          ))}
+        </div>
+        <div className="font-grid">
+          {shownFonts.map((f) => (
             <button key={f.name} className={`font-opt ${store.font === f.name ? 'on' : ''}`} onClick={() => set({ font: f.name })}>
               <span className="font-sample" style={{ fontFamily: f.family }}>
                 {f.name}
               </span>
-              <span className="font-vibe">{f.vibe}</span>
+              <span className="font-vibe">
+                {f.vibe}
+                {f.display && ' · solo títulos'}
+              </span>
             </button>
           ))}
         </div>

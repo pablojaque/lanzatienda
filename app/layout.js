@@ -1,15 +1,12 @@
 import './globals.css';
-import { FONTS } from '@/lib/storeOptions';
 
 export const metadata = {
   title: 'Dropshype — Tu tienda de dropshipping en 2 minutos',
   description: 'Sube tus productos, elige colores, fuente y upsells, y lanza tu tienda de dropshipping al momento.',
 };
 
-const fontsHref =
-  'https://fonts.googleapis.com/css2?' +
-  ['Geist:wght@400..700', 'Geist+Mono:wght@400..600', ...FONTS.map((f) => f.google)].map((f) => 'family=' + f).join('&') +
-  '&display=swap';
+// Solo las fuentes de Dropshype; las de las tiendas las carga el selector del editor
+const fontsHref = 'https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap';
 
 export default function RootLayout({ children }) {
   return (
