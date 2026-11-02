@@ -21,8 +21,10 @@ export async function POST(request) {
     return NextResponse.json({ error: 'La foto no es válida.' }, { status: 400 });
   }
   const buffer = Buffer.from(image, 'base64');
-  // Solo JPEG (el navegador las convierte siempre a JPEG)
-  if (buffer.length > MAX_IMAGE_BYTES || buffer[0] !== 0xff || buffer[1] !== 0xd8) {
+  // Solo JPEG (fotos) o PNG (logos con fondo transparente): el navegador las convierte antes de subirlas
+  const jpeg = buffer[0] === 0xff && buffer[1] === 0xd8;
+  const png = buffer.subarray(0, 4).toString('hex') === '89504e47';
+  if (buffer.length > MAX_IMAGE_BYTES || !(jpeg || png)) {
     return NextResponse.json({ error: 'La foto no es válida o es demasiado grande.' }, { status: 400 });
   }
 

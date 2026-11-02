@@ -19,6 +19,7 @@ function siteFiles(config, projectName, apiBase) {
   });
   const images = new Map();
   for (const p of config.products) for (const img of p.images) images.set(img.sha, img);
+  if (config.logo) images.set(config.logo.sha, config.logo);
   return [
     ...pages,
     ...[...images.values()].map((img) => ({ file: imagePath(img.sha).slice(1), sha: img.sha, size: img.size })),
