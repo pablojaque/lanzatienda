@@ -14,7 +14,7 @@ export default function HeaderBar({ user, name, nav = null, children }) {
       </div>
       {nav}
       <div className="header-actions">
-        {user && name && <span className="hello">Hola, {name} 👋</span>}
+        {user && name && <span className="hello">Hola, {name}</span>}
         {children}
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { normalizeDomain } from '@/lib/domains';
 import DomainBuy from '@/components/DomainBuy';
+import Icon from '@/components/Icon';
 
 const RECHECK_MS = 30000;
 const ORDER_POLL_MS = 4000;
@@ -177,7 +178,9 @@ export default function DomainPanel({ storeId, domain = null, pendingDomain = ''
         {info.ready === undefined ? (
           <span className="badge">Comprobando…</span>
         ) : info.ready ? (
-          <span className="badge ok">✓ Conectado</span>
+          <span className="badge ok">
+            <Icon name="check" size={13} strokeWidth={2.2} /> Conectado
+          </span>
         ) : (
           <span className="badge wait">Esperando DNS</span>
         )}
@@ -187,7 +190,7 @@ export default function DomainPanel({ storeId, domain = null, pendingDomain = ''
         <p className="domain-sub">
           ¡Listo! Tu tienda ya funciona en{' '}
           <a href={url} target="_blank" rel="noreferrer">
-            {info.domain} ↗
+            {info.domain} <Icon name="external" size={13} />
           </a>{' '}
           con candado de seguridad (HTTPS).
         </p>

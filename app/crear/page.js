@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Wizard from '@/components/Wizard';
+import Icon from '@/components/Icon';
 import { getCurrentUser } from '@/lib/currentUser';
 
 export const metadata = { title: 'Crear mi tienda — Dropshype' };
@@ -22,7 +23,9 @@ export default async function CrearPage({ searchParams }) {
     return (
       <div className="auth">
         <div className="auth-card">
-          <div className="done-emoji">🛠️</div>
+          <div className="done-icon">
+            <Icon name="tool" size={24} />
+          </div>
           <h1>{store ? 'Esta tienda no se puede editar' : 'No encontramos esa tienda'}</h1>
           <p className="muted">
             {store

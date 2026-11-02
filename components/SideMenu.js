@@ -5,18 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-
-const ICONS = {
-  plus: <path d="M12 5v14M5 12h14" />,
-  store: <path d="M4 9.5 5.5 4h13L20 9.5M4 9.5V20h16V9.5M4 9.5h16M9.5 20v-5h5v5" />,
-  out: <path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />,
-};
-
-const Icon = ({ name }) => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    {ICONS[name]}
-  </svg>
-);
+import Icon from '@/components/Icon';
 
 /** Botón de tres barras que abre, desde la izquierda, tus tiendas y sus analíticas. */
 export default function SideMenu({ name }) {
@@ -65,9 +54,7 @@ export default function SideMenu({ name }) {
             <b>{name ? `Hola, ${name}` : 'Hola'}</b>
           </div>
           <button type="button" className="icon-btn" onClick={() => setOpen(false)} aria-label="Cerrar menú">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6 6 18" />
-            </svg>
+            <Icon name="close" />
           </button>
         </div>
 
@@ -99,7 +86,7 @@ export default function SideMenu({ name }) {
                 </div>
                 {s.url && (
                   <a href={s.url} target="_blank" rel="noreferrer" className="drawer-open" aria-label={`Abrir ${s.store_name}`}>
-                    ↗
+                    <Icon name="external" size={15} />
                   </a>
                 )}
               </li>

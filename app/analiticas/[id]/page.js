@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/currentUser';
 import HeaderBar from '@/components/HeaderBar';
 import VisitsChart from '@/components/VisitsChart';
+import Icon from '@/components/Icon';
 
 export const metadata = { title: 'Analíticas — Dropshype' };
 export const dynamic = 'force-dynamic';
@@ -71,7 +72,7 @@ export default async function AnaliticasPage({ params, searchParams }) {
             <h1>{store.store_name}</h1>
             {store.url && (
               <a href={store.domain ? `https://${store.domain}` : store.url} target="_blank" rel="noreferrer" className="store-url">
-                {store.domain || store.url.replace('https://', '')} ↗
+                {store.domain || store.url.replace('https://', '')} <Icon name="external" size={13} />
               </a>
             )}
           </div>

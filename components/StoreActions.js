@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Icon from '@/components/Icon';
 
 /** Botones de cada tienda en «Mis tiendas»: analíticas, pedidos, editar, abrir y borrar. */
 export default function StoreActions({ store }) {
@@ -31,21 +32,21 @@ export default function StoreActions({ store }) {
     <>
       <div className="store-actions">
         <Link href={`/analiticas/${store.id}`} className="btn btn-ghost btn-sm">
-          📊 Analíticas
+          <Icon name="chart" /> Analíticas
         </Link>
         <Link href={`/pedidos/${store.id}`} className="btn btn-ghost btn-sm">
-          📦 Pedidos
+          <Icon name="box" /> Pedidos
         </Link>
         <Link href={`/crear?tienda=${store.id}`} className="btn btn-ghost btn-sm">
-          ✏️ Editar
+          <Icon name="edit" /> Editar
         </Link>
         {store.url && (
           <a href={store.url} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
-            Abrir ↗
+            <Icon name="external" /> Abrir
           </a>
         )}
         <button type="button" className="btn btn-ghost btn-sm btn-danger" onClick={remove} disabled={deleting}>
-          {deleting ? 'Borrando…' : '🗑️ Borrar'}
+          <Icon name="trash" /> {deleting ? 'Borrando…' : 'Borrar'}
         </button>
       </div>
       {error && <div className="alert">{error}</div>}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Logo from '@/components/Logo';
+import Icon from '@/components/Icon';
 import { createClient } from '@/lib/supabase/client';
 
 /** Después de registrarse: ¿cómo te llamas? (lo usamos para saludarte). */
@@ -28,7 +29,9 @@ export default function NameForm({ next, initial = '', editing = false }) {
     <div className="auth">
       <div className="auth-card">
         <Logo />
-        <div className="done-emoji">👋</div>
+        <div className="done-icon">
+          <Icon name="user" size={24} />
+        </div>
         <h1>{editing ? 'Cambia tu nombre' : '¡Bienvenido! ¿Cómo te llamas?'}</h1>
         <p className="muted">Así sabremos cómo saludarte cada vez que entres.</p>
         <form className="form" onSubmit={save}>

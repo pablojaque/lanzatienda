@@ -3,44 +3,11 @@ import HeaderBar from '@/components/HeaderBar';
 import CursorFx from '@/components/CursorFx';
 import NavShadow from '@/components/NavShadow';
 import { LogoMark } from '@/components/Logo';
+import Icon from '@/components/Icon';
 import { getCurrentUser } from '@/lib/currentUser';
 
 export const dynamic = 'force-dynamic';
 
-// Iconos de línea (mismo trazo en todos)
-const ICONS = {
-  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" />,
-  card: (
-    <>
-      <rect x="2.5" y="5" width="19" height="14" rx="2.5" />
-      <path d="M2.5 10h19M7 15h3" />
-    </>
-  ),
-  globe: (
-    <>
-      <circle cx="12" cy="12" r="9.5" />
-      <path d="M2.5 12h19M12 2.5c2.6 2.8 3.9 6 3.9 9.5s-1.3 6.7-3.9 9.5c-2.6-2.8-3.9-6-3.9-9.5S9.4 5.3 12 2.5z" />
-    </>
-  ),
-  chart: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
-  layers: <path d="m12 3 9.5 5-9.5 5-9.5-5L12 3zm-9.5 9 9.5 5 9.5-5M2.5 16l9.5 5 9.5-5" />,
-  edit: <path d="M4 20h4L19.5 8.5a2.8 2.8 0 0 0-4-4L4 16v4zM13.5 6.5l4 4" />,
-  phone: (
-    <>
-      <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
-      <path d="M11 18.5h2" />
-    </>
-  ),
-  bag: <path d="M5 8h14l-1 12.5H6L5 8zm4 0V6.5a3 3 0 0 1 6 0V8" />,
-};
-
-function Icon({ name, size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {ICONS[name]}
-    </svg>
-  );
-}
 
 const STEPS = [
   ['Sube tus productos', 'De 1 a 4 fotos por producto. Las optimizamos para que la tienda cargue al instante.'],
@@ -285,7 +252,7 @@ export default async function Home() {
               {FEATURES.map((f) => (
                 <article key={f.title} className={`spot ${f.wide ? 'wide' : ''}`}>
                   <span className="spot-icon">
-                    <Icon name={f.icon} />
+                    <Icon name={f.icon} size={18} strokeWidth={1.7} />
                   </span>
                   <h3>{f.title}</h3>
                   <p>{f.text}</p>
