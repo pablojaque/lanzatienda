@@ -1,24 +1,31 @@
 import { NextResponse } from 'next/server';
-import { renderStore } from '@/lib/storeTemplate';
-import { deployStatic } from '@/lib/vercel';
+import { renderSite } from '@/lib/storeTemplate';
+import { deployFiles } from '@/lib/vercel';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { imagePath, sanitizeConfig, slugify } from '@/lib/storeConfig';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const MAX_IMAGE_BYTES = 900 * 1024;
-
-function slugify(s) {
-  return String(s || 'tienda')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40) || 'tienda';
+/** Archivos de la tienda: sus páginas y las fotos (ya subidas, se mandan solo por su sha). */
+function siteFiles(config, projectName, apiBase) {
+  const baseUrl = `https://${projectName}.vercel.app`;
+  const pages = renderSite(config, {
+    imageUrl: (img) => imagePath(img.sha),
+    baseUrl,
+    // La tienda avisa a LanzaTienda de visitas y clics, y le pide el cobro con tarjeta
+    api: { track: `${apiBase}/api/track`, checkout: `${apiBase}/api/store-checkout`, p: projectName },
+  });
+  const images = new Map();
+  for (const p of config.products) for (const img of p.images) images.set(img.sha, img);
+  return [
+    ...pages,
+    ...[...images.values()].map((img) => ({ file: imagePath(img.sha).slice(1), sha: img.sha, size: img.size })),
+  ];
 }
 
+// Crea una tienda nueva o, con storeId, vuelve a publicar una existente con los cambios
 export async function POST(request) {
   try {
     const supabase = await createClient();
@@ -29,57 +36,66 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Tu sesión ha caducado. Vuelve a iniciar sesión.' }, { status: 401 });
     }
 
-    const { config, images } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const { config, error } = sanitizeConfig(body.config);
+    if (error) return NextResponse.json({ error }, { status: 400 });
 
-    if (!config?.storeName || !config?.productName || !(Number(config.price) > 0)) {
-      return NextResponse.json({ error: 'Faltan el nombre de la tienda, el producto o el precio.' }, { status: 400 });
-    }
-    if (!Array.isArray(images) || images.length !== 4) {
-      return NextResponse.json({ error: 'Necesitamos exactamente 4 fotos.' }, { status: 400 });
-    }
-    for (const img of images) {
-      if (typeof img !== 'string' || !/^[A-Za-z0-9+/=]+$/.test(img) || img.length * 0.75 > MAX_IMAGE_BYTES) {
-        return NextResponse.json({ error: 'Alguna foto no es válida o es demasiado grande.' }, { status: 400 });
-      }
-    }
-    if (config.paymentLink && !/^https:\/\//.test(config.paymentLink)) {
-      return NextResponse.json({ error: 'El enlace de pago debe empezar por https://' }, { status: 400 });
-    }
-
-    const projectName = `${slugify(config.storeName)}-${Math.random().toString(36).slice(2, 7)}`;
-    const storeConfig = {
-      ...config,
-      launchEndsAt: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
-      // La tienda avisa a LanzaTienda de cada visita y clic para las analíticas
-      projectName,
-      trackUrl: `${process.env.LANZATIENDA_URL || new URL(request.url).origin}/api/track`,
-    };
-    const imagePaths = images.map((_, i) => `img/${i + 1}.jpg`);
-    const html = renderStore(storeConfig, imagePaths);
-    const files = [
-      { file: 'index.html', data: html },
-      ...images.map((data, i) => ({ file: imagePaths[i], data, encoding: 'base64' })),
-    ];
-
-    const deployment = await deployStatic(projectName, files);
-
-    // Guardamos la tienda a nombre del usuario (para "Mis tiendas" y su dominio)
-    // (si falla, la tienda sigue publicada igualmente)
-    let storeId = null;
-    try {
-      const { data: store, error: dbError } = await createAdminClient()
+    const admin = createAdminClient();
+    let existing = null;
+    if (body.storeId) {
+      const { data } = await admin
         .from('stores')
-        .insert({
+        .select('id, project_name, url, config')
+        .eq('id', body.storeId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!data) return NextResponse.json({ error: 'No encontramos esa tienda en tu cuenta.' }, { status: 404 });
+      existing = data;
+    }
+
+    // Al editar se mantiene la cuenta atrás que ya tenía la tienda
+    config.launchEndsAt = existing?.config?.launchEndsAt || new Date(Date.now() + 72 * 3600 * 1000).toISOString();
+
+    const projectName = existing?.project_name || `${slugify(config.storeName)}-${Math.random().toString(36).slice(2, 7)}`;
+    const apiBase = process.env.LANZATIENDA_URL || new URL(request.url).origin;
+    const files = siteFiles(config, projectName, apiBase);
+
+    // Si Vercel ya no guarda alguna foto, la recuperamos de la tienda publicada
+    const recover = async (sha) => {
+      const res = await fetch(`${existing?.url || `https://${projectName}.vercel.app`}${imagePath(sha)}`, { cache: 'no-store' });
+      if (!res.ok) throw new Error('Falta una foto: vuelve a subirla.');
+      return Buffer.from(await res.arrayBuffer());
+    };
+    const deployment = await deployFiles(projectName, files, recover);
+
+    let storeId = existing?.id || null;
+    try {
+      if (existing) {
+        const { error: dbError } = await admin
+          .from('stores')
+          .update({ store_name: config.storeName, deployment_id: deployment.id, config })
+          .eq('id', existing.id);
+        if (dbError) throw dbError;
+      } else {
+        // Guardamos la tienda a nombre del usuario (para "Mis tiendas", editarla y su dominio)
+        // (si falla, la tienda sigue publicada igualmente)
+        const row = {
           user_id: user.id,
-          store_name: String(config.storeName).slice(0, 80),
+          store_name: config.storeName,
           project_name: projectName,
           deployment_id: deployment.id,
           url: `https://${projectName}.vercel.app`,
-        })
-        .select('id')
-        .single();
-      if (dbError) throw dbError;
-      storeId = store.id;
+          config,
+        };
+        let { data: store, error: dbError } = await admin.from('stores').insert(row).select('id').single();
+        // Si aún no se ha añadido la columna config en Supabase, la guardamos sin ella (no se podrá editar)
+        if (dbError && /config/.test(dbError.message || '')) {
+          const { config: _omit, ...withoutConfig } = row;
+          ({ data: store, error: dbError } = await admin.from('stores').insert(withoutConfig).select('id').single());
+        }
+        if (dbError) throw dbError;
+        storeId = store.id;
+      }
     } catch (dbError) {
       console.error('no se pudo guardar la tienda', dbError);
     }
