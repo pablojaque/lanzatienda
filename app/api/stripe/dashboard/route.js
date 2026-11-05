@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createDashboardLink } from '@/lib/stripe';
+import { STRIPE_DASHBOARD_URL } from '@/lib/stripe';
 import { getUserAccountId } from '@/lib/payments';
 
 export const runtime = 'nodejs';
@@ -16,11 +16,6 @@ export async function POST() {
 
   const accountId = await getUserAccountId(createAdminClient(), user.id);
   if (!accountId) return NextResponse.json({ error: 'Todavía no has activado los cobros.' }, { status: 404 });
-  try {
-    const link = await createDashboardLink(accountId);
-    return NextResponse.json({ url: link.url });
-  } catch (err) {
-    console.error('dashboard link error', err);
-    return NextResponse.json({ error: 'Termina primero el alta en Stripe.' }, { status: 409 });
-  }
+  // Con cuentas Standard el usuario entra en su panel de Stripe con su propio usuario y contraseña
+  return NextResponse.json({ url: STRIPE_DASHBOARD_URL });
 }
