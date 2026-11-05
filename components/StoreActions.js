@@ -9,7 +9,19 @@ import Icon from '@/components/Icon';
 export default function StoreActions({ store }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [copying, setCopying] = useState(false);
   const [error, setError] = useState('');
+
+  async function duplicate() {
+    setCopying(true);
+    setError('');
+    const res = await fetch(`/api/stores/${store.id}/duplicate`, { method: 'POST' }).catch(() => null);
+    const data = res ? await res.json().catch(() => ({})) : {};
+    setCopying(false);
+    if (!res?.ok) return setError(data.error || 'No hemos podido duplicar la tienda. Inténtalo de nuevo.');
+    // La copia aparece en la lista; Vercel tarda unos segundos en tenerla online
+    router.refresh();
+  }
 
   async function remove() {
     const sure = confirm(
@@ -45,6 +57,9 @@ export default function StoreActions({ store }) {
             <Icon name="external" /> Abrir
           </a>
         )}
+        <button type="button" className="btn btn-ghost btn-sm" onClick={duplicate} disabled={copying}>
+          <Icon name="copy" /> {copying ? 'Duplicando…' : 'Duplicar'}
+        </button>
         <button type="button" className="btn btn-ghost btn-sm btn-danger" onClick={remove} disabled={deleting}>
           <Icon name="trash" /> {deleting ? 'Borrando…' : 'Borrar'}
         </button>

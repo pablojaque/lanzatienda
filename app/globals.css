@@ -827,6 +827,169 @@ body,
   color: var(--muted);
   font-size: 14px;
 }
+/* Plantillas del creador */
+.tpl {
+  margin: 4px 0 22px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft-2);
+}
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.tpl-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  text-align: left;
+}
+.tpl-card:hover {
+  border-color: var(--accent);
+}
+.tpl-card img {
+  width: 48px;
+  height: 48px;
+  border-radius: 9px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.tpl-card b {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.tpl-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Pie de página, enlaces legales, ajustes de cuenta y 404 */
+.legal {
+  max-width: 760px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+.legal h1 {
+  font-size: clamp(30px, 4vw, 40px);
+  letter-spacing: -0.03em;
+}
+.legal h2 {
+  font-size: 19px;
+  margin: 30px 0 8px;
+}
+.legal p,
+.legal li {
+  color: var(--text-2);
+  line-height: 1.7;
+}
+.legal p + p {
+  margin-top: 10px;
+}
+.legal ul {
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+}
+.legal a {
+  color: var(--accent);
+}
+.legal .legal-id {
+  list-style: none;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.foot-links {
+  display: flex;
+  gap: 20px;
+}
+.foot-links a:hover {
+  color: var(--ink);
+}
+.link-btn {
+  justify-self: start;
+  margin-top: -6px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.link-btn:hover {
+  color: var(--accent);
+}
+.auth-legal {
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.auth-legal a {
+  color: var(--text-2);
+  text-decoration: underline;
+}
+.acc {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+.acc-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 4px 20px 20px;
+}
+.acc-card .form {
+  margin-top: 0;
+}
+.acc-card input {
+  font: inherit;
+  font-size: 14.5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  color: var(--ink);
+  outline: none;
+}
+.acc-card input:focus {
+  border-color: var(--accent);
+}
+.acc-card .btn {
+  margin-top: 14px;
+}
+.acc-card.danger {
+  border-color: var(--danger-line);
+}
+.acc-ok {
+  margin-top: 12px;
+  color: var(--ok-fg);
+  font-size: 14px;
+  font-weight: 600;
+}
+.nf-code {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+.nf-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
 .site-footer .container {
   display: flex;
   justify-content: space-between;

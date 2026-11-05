@@ -57,6 +57,12 @@ const PATHS = {
   store: <path d="M4 9.5 5.5 4h13L20 9.5M4 9.5V20h16V9.5M4 9.5h16M9.5 20v-5h5v5" />,
   out: <path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
+  copy: (
+    <>
+      <rect x="8.5" y="8.5" width="12" height="12" rx="2.5" />
+      <path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 16, strokeWidth = 1.8, className = '' }) {

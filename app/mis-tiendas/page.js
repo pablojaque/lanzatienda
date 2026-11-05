@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getCurrentUser } from '@/lib/currentUser';
 import DomainPanel from '@/components/DomainPanel';
 import HeaderBar from '@/components/HeaderBar';
+import SiteFooter from '@/components/SiteFooter';
 import StoreActions from '@/components/StoreActions';
 import PaymentsPanel from '@/components/PaymentsPanel';
 import Icon from '@/components/Icon';
@@ -76,6 +77,7 @@ export default async function MisTiendasPage({ searchParams }) {
           ))}
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }
