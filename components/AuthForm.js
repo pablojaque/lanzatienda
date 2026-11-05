@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Logo from '@/components/Logo';
 import Icon from '@/components/Icon';
 import { createClient } from '@/lib/supabase/client';
@@ -31,6 +32,7 @@ export default function AuthForm({ next, linkError }) {
   });
 
   const isSignup = mode === 'signup';
+  const isReset = mode === 'reset';
   const busy = status.state === 'sending';
 
   function switchMode(m) {
@@ -42,6 +44,15 @@ export default function AuthForm({ next, linkError }) {
     e.preventDefault();
     setStatus({ state: 'sending', message: '' });
     const supabase = createClient();
+
+    // Recuperar contraseña: Supabase manda un email con un enlace que abre la página para poner otra
+    if (isReset) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/cuenta/contrasena')}`,
+      });
+      if (error) return setStatus({ state: 'error', message: translate(error.message) });
+      return setStatus({ state: 'reset-sent', message: '' });
+    }
 
     if (isSignup) {
       const { data, error } = await supabase.auth.signUp({
@@ -58,6 +69,25 @@ export default function AuthForm({ next, linkError }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return setStatus({ state: 'error', message: translate(error.message) });
     window.location.assign(next);
+  }
+
+  if (status.state === 'reset-sent') {
+    return (
+      <div className="auth">
+        <div className="auth-card">
+          <div className="done-icon">
+            <Icon name="mail" size={24} />
+          </div>
+          <h1>Revisa tu email</h1>
+          <p className="muted">
+            Si hay una cuenta con <b>{email}</b>, te llegará un enlace para poner una contraseña nueva. Mira también en spam.
+          </p>
+          <button className="text-btn" onClick={() => switchMode('login')}>
+            Volver a entrar
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (status.state === 'sent') {
@@ -83,19 +113,25 @@ export default function AuthForm({ next, linkError }) {
     <div className="auth">
       <div className="auth-card">
         <Logo />
-        <h1>{isSignup ? 'Crea tu cuenta gratis' : 'Bienvenido de nuevo'}</h1>
+        <h1>{isReset ? 'Recupera tu contraseña' : isSignup ? 'Crea tu cuenta gratis' : 'Bienvenido de nuevo'}</h1>
         <p className="muted">
-          {isSignup ? 'Necesitas una cuenta para crear y guardar tus tiendas.' : 'Entra para seguir creando tus tiendas.'}
+          {isReset
+            ? 'Escribe tu email y te mandamos un enlace para poner una contraseña nueva.'
+            : isSignup
+              ? 'Necesitas una cuenta para crear y guardar tus tiendas.'
+              : 'Entra para seguir creando tus tiendas.'}
         </p>
 
-        <div className="auth-tabs">
-          <button type="button" className={isSignup ? 'on' : ''} onClick={() => switchMode('signup')}>
-            Registrarme
-          </button>
-          <button type="button" className={!isSignup ? 'on' : ''} onClick={() => switchMode('login')}>
-            Iniciar sesión
-          </button>
-        </div>
+        {!isReset && (
+          <div className="auth-tabs">
+            <button type="button" className={isSignup ? 'on' : ''} onClick={() => switchMode('signup')}>
+              Registrarme
+            </button>
+            <button type="button" className={!isSignup ? 'on' : ''} onClick={() => switchMode('login')}>
+              Iniciar sesión
+            </button>
+          </div>
+        )}
 
         <form className="form" onSubmit={handleSubmit}>
           <label>
@@ -109,25 +145,43 @@ export default function AuthForm({ next, linkError }) {
               placeholder="tu@email.com"
             />
           </label>
-          <label>
-            Contraseña
-            <input
-              type="password"
-              required
-              minLength={6}
-              autoComplete={isSignup ? 'new-password' : 'current-password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={isSignup ? 'Mínimo 6 caracteres' : 'Tu contraseña'}
-            />
-          </label>
+          {!isReset && (
+            <label>
+              Contraseña
+              <input
+                type="password"
+                required
+                minLength={6}
+                autoComplete={isSignup ? 'new-password' : 'current-password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={isSignup ? 'Mínimo 6 caracteres' : 'Tu contraseña'}
+              />
+            </label>
+          )}
+          {mode === 'login' && (
+            <button type="button" className="link-btn" onClick={() => switchMode('reset')}>
+              ¿Has olvidado tu contraseña?
+            </button>
+          )}
 
           {status.state === 'error' && <div className="alert">{status.message}</div>}
 
           <button className="btn btn-primary" disabled={busy}>
-            {busy ? 'Un momento…' : isSignup ? 'Crear cuenta y empezar' : 'Entrar'}
+            {busy ? 'Un momento…' : isReset ? 'Enviarme el enlace' : isSignup ? 'Crear cuenta y empezar' : 'Entrar'}
           </button>
         </form>
+        {isReset && (
+          <button type="button" className="text-btn" onClick={() => switchMode('login')}>
+            Volver a entrar
+          </button>
+        )}
+        {isSignup && (
+          <p className="auth-legal">
+            Al crear tu cuenta aceptas los <Link href="/legal/terminos">Términos</Link> y la{' '}
+            <Link href="/legal/privacidad">Política de privacidad</Link>.
+          </p>
+        )}
       </div>
     </div>
   );

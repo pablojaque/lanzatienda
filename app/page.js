@@ -2,7 +2,7 @@ import Link from 'next/link';
 import HeaderBar from '@/components/HeaderBar';
 import CursorFx from '@/components/CursorFx';
 import NavShadow from '@/components/NavShadow';
-import { LogoMark } from '@/components/Logo';
+import SiteFooter from '@/components/SiteFooter';
 import Icon from '@/components/Icon';
 import { getCurrentUser } from '@/lib/currentUser';
 
@@ -299,15 +299,7 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="container">
-          <span className="brand">
-            <LogoMark size={22} />
-            <span>Dropshype</span>
-          </span>
-          <span>© {new Date().getFullYear()} Dropshype · Hecho para dropshippers</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

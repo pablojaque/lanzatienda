@@ -65,6 +65,9 @@ export default function SideMenu({ name }) {
           <Link href="/mis-tiendas" className={pathname === '/mis-tiendas' ? 'on' : ''}>
             <Icon name="store" /> Mis tiendas
           </Link>
+          <Link href="/cuenta" className={pathname === '/cuenta' ? 'on' : ''}>
+            <Icon name="user" /> Ajustes de cuenta
+          </Link>
         </div>
 
         <h4 className="drawer-title">Tus tiendas</h4>

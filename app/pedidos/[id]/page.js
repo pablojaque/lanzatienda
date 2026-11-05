@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { listPaidCheckouts, stripeEnabled } from '@/lib/stripe';
 import { getUserAccountId } from '@/lib/payments';
 import HeaderBar from '@/components/HeaderBar';
+import SiteFooter from '@/components/SiteFooter';
 
 export const metadata = { title: 'Pedidos — Dropshype' };
 export const dynamic = 'force-dynamic';
@@ -138,6 +139,7 @@ export default async function PedidosPage({ params }) {
           </>
         )}
       </main>
+      <SiteFooter />
     </>
   );
 }

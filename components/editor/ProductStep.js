@@ -5,7 +5,7 @@ import { ListEditor, Section } from '@/components/editor/ui';
 import { productReady } from '@/components/editor/model';
 
 /** Paso 1: productos, con sus fotos, precios, texto, beneficios y opciones (talla, color…). */
-export default function ProductStep({ products, active, setActive, updateProduct, addProduct, removeProduct, photos }) {
+export default function ProductStep({ products, active, setActive, updateProduct, addProduct, removeProduct, photos, templates }) {
   const product = products[active] || products[0];
   const set = (key) => (e) => updateProduct(active, { [key]: e.target.value });
 
@@ -13,6 +13,8 @@ export default function ProductStep({ products, active, setActive, updateProduct
     <>
       <h2>{products.length > 1 ? 'Tus productos' : 'Tu producto'}</h2>
       <p className="muted">Sube de 1 a 4 fotos de cada producto. La primera será la principal.</p>
+
+      {templates}
 
       <div className="product-tabs">
         {products.map((p, i) => (

@@ -12,7 +12,8 @@ import DesignStep from '@/components/editor/DesignStep';
 import UpsellStep from '@/components/editor/UpsellStep';
 import ContentStep from '@/components/editor/ContentStep';
 import LaunchStep from '@/components/editor/LaunchStep';
-import { buildConfig, emptyProduct, fromSaved, missingOf, newStore, productReady } from '@/components/editor/model';
+import TemplatePicker from '@/components/editor/TemplatePicker';
+import { buildConfig, emptyProduct, fromSaved, missingOf, newStore, padPhotos, productReady } from '@/components/editor/model';
 
 const STEPS = ['Productos', 'Diseño', 'Upsells', 'Contenido', 'Lanzar'];
 const LAST = STEPS.length - 1;
@@ -71,6 +72,8 @@ export default function Wizard({ user, name, initial = null }) {
   const [previewPage, setPreviewPage] = useState(0);
   const [launch, setLaunch] = useState({ status: 'idle' });
   const [copied, setCopied] = useState(false);
+  // Las plantillas solo se ofrecen al crear una tienda, hasta que se elige una o se empieza de cero
+  const [showTemplates, setShowTemplates] = useState(!initial);
   const fileInput = useRef(null);
   const replaceSlot = useRef(null);
 
@@ -143,6 +146,28 @@ export default function Wizard({ user, name, initial = null }) {
         .then((done) => patchImage(productId, a.key, done))
         .catch(() => patchImage(productId, a.key, { status: 'error' }))
     );
+  }
+
+  // Plantilla: estilo de tienda + un producto de ejemplo con su foto (que se sube como cualquier otra)
+  async function applyTemplate(t) {
+    setShowTemplates(false);
+    const key = Math.random().toString(36).slice(2);
+    const product = { ...emptyProduct(), ...t.product, images: padPhotos([{ key, src: t.image, status: 'uploading' }]) };
+    setStore((s) => ({ ...s, ...t.store }));
+    setProducts([product]);
+    setActive(0);
+    try {
+      const blob = await (await fetch(t.image)).blob();
+      const dataUrl = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(blob);
+      });
+      patchImage(product.id, key, { src: dataUrl, ...(await uploadImage(dataUrl)) });
+    } catch {
+      patchImage(product.id, key, { status: 'error' });
+    }
   }
 
   async function addLogo(file) {
@@ -356,6 +381,9 @@ export default function Wizard({ user, name, initial = null }) {
               addProduct={addProduct}
               removeProduct={removeProduct}
               photos={photos}
+              templates={
+                showTemplates && <TemplatePicker onPick={applyTemplate} onSkip={() => setShowTemplates(false)} />
+              }
             />
           )}
           {step === 1 && (

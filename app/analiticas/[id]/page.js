@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/currentUser';
 import HeaderBar from '@/components/HeaderBar';
+import SiteFooter from '@/components/SiteFooter';
 import VisitsChart from '@/components/VisitsChart';
 import Icon from '@/components/Icon';
 
@@ -117,6 +118,7 @@ export default async function AnaliticasPage({ params, searchParams }) {
           pago; la venta se termina en tu pasarela de pago.
         </p>
       </main>
+      <SiteFooter />
     </>
   );
 }
