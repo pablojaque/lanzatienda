@@ -13,7 +13,18 @@ import UpsellStep from '@/components/editor/UpsellStep';
 import ContentStep from '@/components/editor/ContentStep';
 import LaunchStep from '@/components/editor/LaunchStep';
 import TemplatePicker from '@/components/editor/TemplatePicker';
-import { buildConfig, emptyProduct, fromSaved, missingOf, newStore, padPhotos, productReady } from '@/components/editor/model';
+import AiChat from '@/components/editor/AiChat';
+import {
+  aiState,
+  buildConfig,
+  emptyProduct,
+  fromSaved,
+  mergeAiProducts,
+  missingOf,
+  newStore,
+  padPhotos,
+  productReady,
+} from '@/components/editor/model';
 
 const STEPS = ['Productos', 'Diseño', 'Upsells', 'Contenido', 'Lanzar'];
 const LAST = STEPS.length - 1;
@@ -58,9 +69,11 @@ async function uploadImage(dataUrl) {
 /**
  * Creador y editor de tiendas. Con `initial` ({ storeId, url, config }) sirve para editar una tienda ya publicada.
  */
-export default function Wizard({ user, name, initial = null }) {
+export default function Wizard({ user, name, initial = null, aiEnabled = false }) {
   const editing = !!initial;
-  const [start] = useState(() => (initial ? fromSaved(initial.config, initial.url) : { store: newStore(), products: [emptyProduct()] }));
+  const [start] = useState(() =>
+    initial ? fromSaved(initial.config, initial.url) : { store: newStore(), products: [emptyProduct()] }
+  );
   const savedName = initial?.config?.storeName;
 
   const [step, setStep] = useState(0);
@@ -76,6 +89,11 @@ export default function Wizard({ user, name, initial = null }) {
   const [showTemplates, setShowTemplates] = useState(!initial);
   const fileInput = useRef(null);
   const replaceSlot = useRef(null);
+  // Asistente de IA: abierto o no, y cómo estaba la tienda antes de su último cambio (para deshacerlo)
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiUndo, setAiUndo] = useState(null);
+  const current = useRef({ store, products });
+  current.current = { store, products };
 
   const product = products[active] || products[0];
   const photoCount = product.images.filter(Boolean).length;
@@ -113,7 +131,9 @@ export default function Wizard({ user, name, initial = null }) {
   function patchImage(productId, key, patch) {
     setProducts((prev) =>
       prev.map((p) =>
-        p.id !== productId ? p : { ...p, images: p.images.map((img) => (img?.key === key ? (patch ? { ...img, ...patch } : null) : img)) }
+        p.id !== productId
+          ? p
+          : { ...p, images: p.images.map((img) => (img?.key === key ? (patch ? { ...img, ...patch } : null) : img)) }
       )
     );
   }
@@ -176,6 +196,30 @@ export default function Wizard({ user, name, initial = null }) {
     setStore((s) => ({ ...s, logo: { key, src, status: 'uploading' } }));
     const patch = await uploadImage(src).catch(() => ({ status: 'error' }));
     setStore((s) => (s.logo?.key === key ? { ...s, logo: { ...s.logo, ...patch } } : s));
+  }
+
+  function applyAi({ store: patch, products: list }) {
+    const before = current.current;
+    setAiUndo(before);
+    if (patch && Object.keys(patch).length) setStore((s) => ({ ...s, ...patch }));
+    if (list) {
+      setProducts((prev) => mergeAiProducts(prev, list));
+      setActive(0);
+    }
+  }
+
+  // Vuelve a como estaba antes del último cambio de la IA, sin perder las fotos subidas mientras tanto
+  function undoAi() {
+    if (!aiUndo) return;
+    setStore((s) => ({ ...aiUndo.store, logo: s.logo }));
+    setProducts((prev) =>
+      aiUndo.products.map((p) => {
+        const now = prev.find((c) => c.id === p.id);
+        return now ? { ...p, images: now.images } : p;
+      })
+    );
+    setActive(0);
+    setAiUndo(null);
   }
 
   function pickFor(slot) {
@@ -357,7 +401,13 @@ export default function Wizard({ user, name, initial = null }) {
               <Icon name="edit" size={14} /> Editando «{savedName}»
             </p>
           )}
-          <div className="progress">
+          {aiEnabled && (
+            <button type="button" className={`ai-toggle ${aiOpen ? 'on' : ''}`} onClick={() => setAiOpen((o) => !o)}>
+              <Icon name="spark" size={16} />
+              {aiOpen ? 'Volver al editor' : 'Asistente IA: pídele cualquier cambio'}
+            </button>
+          )}
+          <div className="progress" hidden={aiOpen}>
             {STEPS.map((s, i) => (
               <button
                 key={s}
@@ -371,7 +421,20 @@ export default function Wizard({ user, name, initial = null }) {
           </div>
         </div>
 
-        <div className="panel-body">
+        {/* El chat sigue montado al cerrarlo para no perder la conversación */}
+        {aiEnabled && (
+          <div className="panel-body ai-body" hidden={!aiOpen}>
+            <AiChat
+              getState={() => aiState(current.current.store, current.current.products)}
+              onApply={applyAi}
+              onUndo={undoAi}
+              canUndo={!!aiUndo}
+              onClose={() => setAiOpen(false)}
+            />
+          </div>
+        )}
+
+        <div className="panel-body" hidden={aiOpen}>
           {step === 0 && (
             <ProductStep
               products={products}
@@ -381,9 +444,7 @@ export default function Wizard({ user, name, initial = null }) {
               addProduct={addProduct}
               removeProduct={removeProduct}
               photos={photos}
-              templates={
-                showTemplates && <TemplatePicker onPick={applyTemplate} onSkip={() => setShowTemplates(false)} />
-              }
+              templates={showTemplates && <TemplatePicker onPick={applyTemplate} onSkip={() => setShowTemplates(false)} />}
             />
           )}
           {step === 1 && (
@@ -411,7 +472,7 @@ export default function Wizard({ user, name, initial = null }) {
           )}
         </div>
 
-        <div className="panel-foot">
+        <div className="panel-foot" hidden={aiOpen}>
           {step > 0 && (
             <button className="btn btn-ghost" onClick={() => setStep(step - 1)} disabled={busy}>
               ← Atrás

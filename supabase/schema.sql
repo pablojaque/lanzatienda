@@ -138,3 +138,34 @@ create policy "Cada usuario ve su cuenta de cobros"
   on public.stripe_accounts for select
   to authenticated
   using ((select auth.uid()) = user_id);
+
+-- Asistente de IA del editor: cuántos mensajes manda cada usuario al día (para limitar el gasto)
+create table if not exists public.ai_usage (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  day date not null default current_date,
+  count integer not null default 0,
+  primary key (user_id, day)
+);
+
+alter table public.ai_usage enable row level security;
+
+-- Suma un mensaje y dice si aún entra en el límite del día. Solo la usa el servidor (secret key).
+create or replace function public.ai_take(p_user uuid, p_limit integer)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  n integer;
+begin
+  insert into public.ai_usage (user_id, day, count)
+  values (p_user, current_date, 1)
+  on conflict (user_id, day) do update set count = public.ai_usage.count + 1
+  returning count into n;
+  return n <= p_limit;
+end;
+$$;
+
+revoke all on function public.ai_take(uuid, integer) from public, anon, authenticated;
+grant execute on function public.ai_take(uuid, integer) to service_role;
