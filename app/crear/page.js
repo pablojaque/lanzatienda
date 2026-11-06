@@ -11,8 +11,10 @@ export default async function CrearPage({ searchParams }) {
   const { tienda } = await searchParams;
   const { supabase, user, name } = await getCurrentUser();
   const me = user ? { id: user.id } : null;
+  // El asistente de IA solo aparece si está configurada la clave de Anthropic
+  const aiEnabled = !!process.env.ANTHROPIC_API_KEY;
 
-  if (!tienda) return <Wizard user={me} name={name} />;
+  if (!tienda) return <Wizard user={me} name={name} aiEnabled={aiEnabled} />;
 
   // Las reglas de Supabase (RLS) solo devuelven tus propias tiendas
   const { data: store } = /^[0-9a-f-]{36}$/i.test(tienda)
@@ -40,5 +42,7 @@ export default async function CrearPage({ searchParams }) {
     );
   }
 
-  return <Wizard user={me} name={name} initial={{ storeId: store.id, url: store.url, config: store.config }} />;
+  return (
+    <Wizard user={me} name={name} aiEnabled={aiEnabled} initial={{ storeId: store.id, url: store.url, config: store.config }} />
+  );
 }

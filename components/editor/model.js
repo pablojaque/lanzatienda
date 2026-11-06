@@ -1,4 +1,12 @@
-import { COLORS, DEFAULT_ANNOUNCEMENT, DEFAULT_BUNDLE_OFFS, DEFAULT_FAQ, DEFAULT_SHIPPING_DAYS, DEFAULT_UPSELLS, FONTS } from '@/lib/storeOptions';
+import {
+  COLORS,
+  DEFAULT_ANNOUNCEMENT,
+  DEFAULT_BUNDLE_OFFS,
+  DEFAULT_FAQ,
+  DEFAULT_SHIPPING_DAYS,
+  DEFAULT_UPSELLS,
+  FONTS,
+} from '@/lib/storeOptions';
 import { MAX_PHOTOS, imagePath, newProductId, normalizeConfig } from '@/lib/storeConfig';
 
 // Cómo se pasa de lo guardado en la tienda al estado del editor, y del editor a la configuración que se publica
@@ -42,6 +50,8 @@ export function newStore() {
     customAddons: [],
     reviews: [],
     faq: DEFAULT_FAQ.map((f) => ({ ...f })),
+    customCss: '',
+    customHtml: '',
   };
 }
 
@@ -112,4 +122,32 @@ export function buildConfig(store, products, { preview = false } = {}) {
       };
     }),
   };
+}
+
+/** Lo que ve el asistente de IA: la tienda sin fotos (solo cuántas hay) ni datos de cobro. */
+export function aiState(store, products) {
+  const { logo, paymentLink, pixels, ...rest } = store;
+  return {
+    ...rest,
+    tieneLogo: !!logo,
+    productos: products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      price: Number(p.price) || 0,
+      comparePrice: Number(p.comparePrice) || 0,
+      description: p.description,
+      benefits: p.benefits,
+      variantName: p.variantName,
+      variantValues: p.variantValues,
+      fotos: p.images.filter(Boolean).length,
+    })),
+  };
+}
+
+/** Aplica la lista de productos del asistente sin perder las fotos de los que ya existían. */
+export function mergeAiProducts(prev, list) {
+  return list.map((p) => {
+    const old = p.id && prev.find((o) => o.id === p.id);
+    return { ...(old || emptyProduct()), ...p, id: old ? old.id : newProductId() };
+  });
 }
